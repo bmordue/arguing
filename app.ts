@@ -1,93 +1,87 @@
-import sqlite3 from 'sqlite3';
-import { readFileSync } from 'fs';
+import sqlite3 from "sqlite3";
+import { Database, open } from "sqlite";
+import { readFile } from "fs/promises";
 
-const db = new sqlite3.Database(':memory:');
-
-async function createTables() {
-    await new Promise<void>((resolve, reject) => {
-        db.run(`
-      CREATE TABLE IF NOT EXISTS nodes (
-        body TEXT,
-        id TEXT GENERATED ALWAYS AS (json_extract(body, '$.id')) VIRTUAL NOT NULL UNIQUE
-      );
-    `, err => {
-            if (err) reject(err);
-            else resolve();
-        });
-    });
-
-    await new Promise<void>((resolve, reject) => {
-        db.run(`
-      CREATE TABLE IF NOT EXISTS edges (
-        source TEXT,
-        target TEXT,
-        properties TEXT,
-        UNIQUE(source, target, properties) ON CONFLICT REPLACE,
-        FOREIGN KEY(source) REFERENCES nodes(id),
-        FOREIGN KEY(target) REFERENCES nodes(id)
-      );
-    `, err => {
-            if (err) reject(err);
-            else resolve();
-        });
-    });
-
-    await new Promise<void>((resolve, reject) => {
-        db.run('BEGIN', err => {
-            if (err) reject(err);
-            else resolve();
-        });
-    });
+interface Node {
+    id: string;
+    label: string;
+    type: string;
 }
 
-async function insertNode(node: any) {
-    await new Promise<void>((resolve, reject) => {
-        db.run(`
-      INSERT INTO nodes (body) VALUES (?);
-    `, JSON.stringify(node), err => {
-            if (err) reject(err);
-            else resolve();
-        });
-    });
+interface Edge {
+    source: string;
+    target: string;
+    label: string[];
 }
 
-async function insertEdge(edge: any) {
-    await new Promise<void>((resolve, reject) => {
-        db.run(`
-      INSERT INTO edges (source, target, properties)
-      VALUES (?, ?, ?);
-    `, [edge.source, edge.target, JSON.stringify(edge.properties)], err => {
-            if (err) reject(err);
-            else resolve();
-        });
-    });
+interface Graph {
+    nodes: Node[];
+    edges: Edge[];
 }
 
-async function endTransaction() {
-    await new Promise<void>((resolve, reject) => {
-        db.run('COMMIT', err => {
-            if (err) reject(err);
-            else resolve();
-        });
-    });
-
-    db.close();
+async function readGraphFromFile(filename: string): Promise<Graph> {
+    const contents = await readFile(filename, "utf-8");
+    return JSON.parse(contents);
 }
 
-async function loadGraphFromFile(filePath: string) {
-    const graph = JSON.parse(readFileSync(filePath, 'utf8'));
+async function writeGraphToDB(graph: Graph, db: Database<sqlite3.Database, sqlite3.Statement>): Promise<void> {
+    await db.exec(`
+    CREATE TABLE IF NOT EXISTS nodes (
+      body TEXT,
+      id   TEXT GENERATED ALWAYS AS (json_extract(body, '$.id')) VIRTUAL NOT NULL UNIQUE
+    );
+    CREATE INDEX IF NOT EXISTS id_idx ON nodes(id);
 
-    await createTables();
+    CREATE TABLE IF NOT EXISTS edges (
+      source     TEXT,
+      target     TEXT,
+      properties TEXT,
+      UNIQUE(source, target, properties) ON CONFLICT REPLACE,
+      FOREIGN KEY(source) REFERENCES nodes(id),
+      FOREIGN KEY(target) REFERENCES nodes(id)
+    );
+    CREATE INDEX IF NOT EXISTS source_idx ON edges(source);
+    CREATE INDEX IF NOT EXISTS target_idx ON edges(target);
+  `);
+
+    // await db.serialize(async () => {
+    await db.run("BEGIN TRANSACTION;");
+
+    const insertNodeStmt = await db.prepare(
+        "INSERT INTO nodes (body) VALUES (?)"
+    );
+    const insertEdgeStmt = await db.prepare(
+        "INSERT INTO edges (source, target, properties) VALUES (?, ?, ?)"
+    );
 
     for (const node of graph.nodes) {
-        await insertNode(node);
+        const nodeStr = JSON.stringify(node);
+        await insertNodeStmt.run(nodeStr);
     }
 
     for (const edge of graph.edges) {
-        await insertEdge(edge);
+        const edgeStr = JSON.stringify({
+            source: edge.source,
+            target: edge.target,
+            properties: JSON.stringify(edge.label),
+        });
+        await insertEdgeStmt.run(edge.source, edge.target, edgeStr);
     }
 
-    await endTransaction();
+    await insertNodeStmt.finalize();
+    await insertEdgeStmt.finalize();
+    await db.run("COMMIT TRANSACTION;");
+    // });
 }
 
-loadGraphFromFile('graph.json').catch(console.error);
+async function main() {
+    const db = await open({
+        filename: "arguing.sqlite",
+        driver: sqlite3.Database,
+    });
+    const graph = await readGraphFromFile("graph.json");
+    await writeGraphToDB(graph, db);
+    await db.close();
+}
+
+main();
