@@ -1,14 +1,7 @@
 {
     "nodes": [
-      { "id": 1, "label": "Claim: The minimum voting age should be lowered to 16." },
-      { "id": 2, "label": "Premise: 16-year-olds are old enough to make informed decisions." },
-      { "id": 3, "label": "Conclusion: 16-year-olds should be allowed to vote." },
-      { "id": 4, "label": "Counter-claim: Lowering the voting age would lead to less informed voting." },
-      { "id": 5, "label": "Premise: 16-year-olds lack the life experience and knowledge to make informed decisions." },
-      { "id": 6, "label": "Conclusion: Lowering the voting age would lead to less informed voting." },
-      { "id": 7, "label": "Rebuttal: Lowering the voting age could actually increase political engagement among young people." },
-      { "id": 8, "label": "Premise: Lowering the voting age would send a message that young people are valued and their voices matter." },
-      { "id": 9, "label": "Conclusion: Lowering the voting age could actually increase political engagement among young people." }
+      [    {"id": "1", "body": {"id": "1", "label": "Peter Zeihan"} },    {"id": "2", "body": {"id": "2", "label": "Richard Haass"} },    {"id": "3", "body": {"id": "3", "label": "George Friedman"} },    {"id": "4", "body": {"id": "4", "label": "Ian Bremmer"} },    {"id": "5", "body": {"id": "5", "label": "Parag Khanna"} },    {"id": "6", "body": {"id": "6", "label": "Robert Kaplan"} },    {"id": "7", "body": {"id": "7", "label": "Thomas Friedman"} },    {"id": "8", "body": {"id": "8", "label": "Fareed Zakaria"} },    {"id": "9", "body": {"id": "9", "label": "Samuel Huntington"} },    {"id": "10", "body": {"id": "10", "label": "Francis Fukuyama"} },    {"id": "11", "body": {"id": "11", "label": "Jared Diamond"} },    {"id": "12", "body": {"id": "12", "label": "Noam Chomsky"} },    {"id": "13", "body": {"id": "13", "label": "Steven Pinker"} },    {"id": "14", "body": {"id": "14", "label": "Robert Kagan"} },    {"id": "15", "body": {"id": "15", "label": "Graham Allison"} },    {"id": "16", "body": {"id": "16", "label": "John Mearsheimer"} },    {"id": "17", "body": {"id": "17", "label": "Stephen Walt"} },    {"id": "18", "body": {"id": "18", "label": "Kenneth Waltz"} },    {"id": "19", "body": {"id": "19", "label": "Henry Kissinger"} }]
+
     ],
     "edges": [
       { "source": 1, "target": 2, "label": "Because" },
