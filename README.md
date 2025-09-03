@@ -43,17 +43,42 @@ Arguments are modeled as directed graphs where:
 
 1. **Prepare your argument data** in JSON format (see [Data Format](#data-format) below)
 
-2. **Place your JSON file** as `graph.json` in the project root, or modify the filename in `app.ts`
-
-3. **Run the conversion:**
+2. **Basic usage:**
    ```bash
    npm start
    ```
+   This will process `graph.json` and create `arguing.sqlite`.
 
-This will:
-- Compile the TypeScript code
-- Read your `graph.json` file
-- Create/update `arguing.sqlite` database with your argument data
+3. **Advanced usage with options:**
+   ```bash
+   npm start -- --input my_data.json --output results.sqlite --log-level debug
+   ```
+
+4. **See all available options:**
+   ```bash
+   npm start -- --help
+   ```
+
+### Command Line Options
+
+- `-i, --input <file>`: Specify input JSON file (default: graph.json)
+- `-o, --output <file>`: Specify output SQLite file (default: arguing.sqlite)  
+- `-l, --log-level <level>`: Set logging level: error, warn, info, debug (default: info)
+- `-h, --help`: Show help message
+
+## Testing
+
+Run the test suite to verify functionality:
+
+```bash
+npm test
+```
+
+The test suite validates:
+- Input data validation
+- Database creation and operations
+- File format compatibility
+- Error handling scenarios
 
 ## Data Format
 
@@ -84,14 +109,15 @@ This will:
 ```
 
 ### Node Properties
-- `id` (string): Unique identifier
+- `id` (string|number): Unique identifier (flexible format support)
 - `label` (string): The actual text of the argument component
-- `type` (string): Type of argument component (claim, premise, conclusion, rebuttal, etc.)
+- `type` (string, optional): Type of argument component (claim, premise, conclusion, rebuttal, etc.)
+  - Defaults to 'node' if not specified
 
 ### Edge Properties  
-- `source` (string): ID of the source node
-- `target` (string): ID of the target node  
-- `label` (string[]): Array of relationship labels (e.g., ["Because"], ["Therefore"])
+- `source` (string|number): ID of the source node
+- `target` (string|number): ID of the target node  
+- `label` (string|string[]): Relationship label(s) - can be single string or array
 
 ## Database Schema
 
@@ -140,9 +166,14 @@ npx tsc
 ```
 
 ### File Structure
-- `app.ts` - Main application logic
+- `app.ts` - Main application logic and workflow orchestration
+- `types.ts` - TypeScript interfaces and configuration management
+- `validation.ts` - Input validation functions  
+- `logger.ts` - Structured logging utility
+- `test.ts` - Comprehensive test suite
 - `package.json` - Project configuration and dependencies
 - `tsconfig.json` - TypeScript compiler configuration
+- `ARCHITECTURE.md` - Detailed architecture documentation
 - `graph.json` - Input argument data
 - `example_graph.json` - Example argument structure
 - `built/` - Compiled JavaScript output
