@@ -7,7 +7,7 @@ A TypeScript/Node.js tool for converting structured argument data into a queryab
 The **Arguing** tool takes JSON files containing structured argument graphs and converts them into a SQLite database for easy querying and analysis. This is particularly useful for:
 
 - **Argument mapping**: Visualizing and storing logical argument structures
-- **Debate analysis**: Modeling complex debates with multiple claims and rebuttals  
+- **Debate analysis**: Modeling complex debates with multiple claims and rebuttals
 - **Educational tools**: Teaching critical thinking and logical reasoning
 - **Research**: Analyzing argumentation patterns in large datasets
 
@@ -16,28 +16,29 @@ The **Arguing** tool takes JSON files containing structured argument graphs and 
 Arguments are modeled as directed graphs where:
 
 - **Nodes** represent argument components:
-  - Claims (main assertions)
-  - Premises (supporting evidence)
-  - Conclusions (logical outcomes)
-  - Rebuttals (counter-arguments)
+    - Claims (main assertions)
+    - Premises (supporting evidence)
+    - Conclusions (logical outcomes)
+    - Rebuttals (counter-arguments)
 
 - **Edges** represent logical relationships:
-  - "Because" (premise supports claim)
-  - "Therefore" (conclusion follows from premise)
-  - Custom relationship types
+    - "Because" (premise supports claim)
+    - "Therefore" (conclusion follows from premise)
+    - Custom relationship types
 
 ## Installation
 
 1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/bmordue/arguing.git
-   cd arguing
-   ```
+
+    ```bash
+    git clone https://github.com/bmordue/arguing.git
+    cd arguing
+    ```
 
 2. **Install dependencies:**
-   ```bash
-   npm install
-   ```
+    ```bash
+    npm install
+    ```
 
 ## Usage
 
@@ -86,25 +87,25 @@ The test suite validates:
 
 ```json
 {
-  "nodes": [
-    {
-      "id": "1",
-      "label": "16-year-olds should be allowed to vote",
-      "type": "claim"
-    },
-    {
-      "id": "2", 
-      "label": "16-year-olds can make informed decisions",
-      "type": "premise"
-    }
-  ],
-  "edges": [
-    {
-      "source": "2",
-      "target": "1", 
-      "label": ["Because"]
-    }
-  ]
+    "nodes": [
+        {
+            "id": "1",
+            "label": "16-year-olds should be allowed to vote",
+            "type": "claim"
+        },
+        {
+            "id": "2",
+            "label": "16-year-olds can make informed decisions",
+            "type": "premise"
+        }
+    ],
+    "edges": [
+        {
+            "source": "2",
+            "target": "1",
+            "label": ["Because"]
+        }
+    ]
 }
 ```
 
@@ -114,16 +115,18 @@ The test suite validates:
 - `type` (string, optional): Type of argument component (claim, premise, conclusion, rebuttal, etc.)
   - Defaults to 'node' if not specified
 
-### Edge Properties  
-- `source` (string|number): ID of the source node
-- `target` (string|number): ID of the target node  
-- `label` (string|string[]): Relationship label(s) - can be single string or array
+### Edge Properties
+
+- `source` (string): ID of the source node
+- `target` (string): ID of the target node
+- `label` (string[]): Array of relationship labels (e.g., ["Because"], ["Therefore"])
 
 ## Database Schema
 
 The tool creates a SQLite database with the following structure:
 
 ### `nodes` table
+
 ```sql
 CREATE TABLE nodes (
   body TEXT,                    -- JSON representation of the node
@@ -131,11 +134,12 @@ CREATE TABLE nodes (
 );
 ```
 
-### `edges` table  
+### `edges` table
+
 ```sql
 CREATE TABLE edges (
   source TEXT,                  -- Source node ID
-  target TEXT,                  -- Target node ID  
+  target TEXT,                  -- Target node ID
   properties TEXT,              -- JSON representation of edge properties
   FOREIGN KEY(source) REFERENCES nodes(id),
   FOREIGN KEY(target) REFERENCES nodes(id)
@@ -147,18 +151,22 @@ CREATE TABLE edges (
 The repository includes two example files:
 
 ### `example_graph.json`
+
 A simple argument about lowering the voting age to 16, demonstrating:
+
 - Claims and counter-claims
-- Supporting premises  
+- Supporting premises
 - Logical conclusions
 - Rebuttals
 
-### `graph.json` 
+### `graph.json`
+
 A more complex example with political figures and their relationships.
 
 ## Development
 
 ### Building
+
 ```bash
 npm run prestart
 # or
@@ -180,6 +188,7 @@ npx tsc
 - `arguing.sqlite` - Generated database (after running)
 
 ### Dependencies
+
 - **sqlite3** - SQLite database driver
 - **sqlite** - Promise-based SQLite wrapper
 - **typescript** - TypeScript compiler
@@ -191,14 +200,14 @@ Once your data is in the SQLite database, you can query it using standard SQL:
 
 ```sql
 -- Find all claims
-SELECT json_extract(body, '$.label') as claim 
-FROM nodes 
+SELECT json_extract(body, '$.label') as claim
+FROM nodes
 WHERE json_extract(body, '$.type') = 'claim';
 
--- Find all relationships of type "Because"  
+-- Find all relationships of type "Because"
 SELECT s.label as source, t.label as target
 FROM edges e
-JOIN (SELECT id, json_extract(body, '$.label') as label FROM nodes) s ON e.source = s.id  
+JOIN (SELECT id, json_extract(body, '$.label') as label FROM nodes) s ON e.source = s.id
 JOIN (SELECT id, json_extract(body, '$.label') as label FROM nodes) t ON e.target = t.id
 WHERE json_extract(e.properties, '$.properties') LIKE '%Because%';
 ```

@@ -21,7 +21,10 @@ async function readGraphFromFile(filename: string): Promise<Graph> {
     }
 }
 
-async function writeGraphToDB(graph: Graph, db: Database<sqlite3.Database, sqlite3.Statement>): Promise<void> {
+async function writeGraphToDB(
+    graph: Graph,
+    db: Database<sqlite3.Database, sqlite3.Statement>
+): Promise<void> {
     await db.exec(`
     CREATE TABLE IF NOT EXISTS nodes (
       body TEXT,
@@ -44,9 +47,7 @@ async function writeGraphToDB(graph: Graph, db: Database<sqlite3.Database, sqlit
     // await db.serialize(async () => {
     await db.run("BEGIN TRANSACTION;");
 
-    const insertNodeStmt = await db.prepare(
-        "INSERT INTO nodes (body) VALUES (?)"
-    );
+    const insertNodeStmt = await db.prepare("INSERT INTO nodes (body) VALUES (?)");
     const insertEdgeStmt = await db.prepare(
         "INSERT INTO edges (source, target, properties) VALUES (?, ?, ?)"
     );

@@ -1,0 +1,7 @@
+# Ignore specific data files that may have formatting issues
+graph.json
+# Build and dependency directories
+built/
+node_modules/
+# SQLite database files
+*.sqlite
