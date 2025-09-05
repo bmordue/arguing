@@ -1,24 +1,21 @@
 {
-    "name": "arguing",
-    "version": "0.0.0",
-    "description": "",
-    "main": "index.js",
-    "scripts": {
-        "prestart": "npx tsc",
-        "start": "node built/app.js",
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "lint": "eslint . --ext .ts",
-        "lint:fix": "eslint . --ext .ts --fix",
-        "format": "prettier --write \"**/*.{ts,js,json,md}\"",
-        "format:check": "prettier --check \"**/*.{ts,js,json,md}\""
-    },
-    "author": "",
-    "license": "ISC",
-    "dependencies": {
-        "sqlite": "^5.1.1",
-        "sqlite3": "^5.1.7"
-    },
-    "devDependencies": {
+  "name": "arguing",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "prestart": "npx tsc",
+    "start": "node built/app.js",
+    "test": "npx tsc && node built/test.js",
+    "build": "npx tsc"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "sqlite": "^5.1.1",
+    "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
         "@eslint/js": "^9.34.0",
         "@types/node": "^24.3.0",
         "@typescript-eslint/eslint-plugin": "^8.42.0",

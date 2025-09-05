@@ -1,27 +1,24 @@
 import sqlite3 from "sqlite3";
 import { Database, open } from "sqlite";
 import { readFile } from "fs/promises";
-
-interface Node {
-    id: string;
-    label: string;
-    type: string;
-}
-
-interface Edge {
-    source: string;
-    target: string;
-    label: string[];
-}
-
-interface Graph {
-    nodes: Node[];
-    edges: Edge[];
-}
+import { Graph, Config, parseConfig } from './types';
+import { validateGraph } from './validation';
+import { Logger } from './logger';
 
 async function readGraphFromFile(filename: string): Promise<Graph> {
-    const contents = await readFile(filename, "utf-8");
-    return JSON.parse(contents);
+    try {
+        const contents = await readFile(filename, "utf-8");
+        const parsedData = JSON.parse(contents);
+        return validateGraph(parsedData);
+    } catch (error) {
+        if (error instanceof SyntaxError) {
+            throw new Error(`Invalid JSON in file ${filename}: ${error.message}`);
+        }
+        if (error instanceof Error && error.message.includes('ENOENT')) {
+            throw new Error(`File not found: ${filename}`);
+        }
+        throw error;
+    }
 }
 
 async function writeGraphToDB(
@@ -56,17 +53,25 @@ async function writeGraphToDB(
     );
 
     for (const node of graph.nodes) {
-        const nodeStr = JSON.stringify(node);
+        // Normalize node data to ensure consistent structure
+        const normalizedNode = {
+            id: String(node.id),
+            label: node.label,
+            type: node.type || 'node'
+        };
+        const nodeStr = JSON.stringify(normalizedNode);
         await insertNodeStmt.run(nodeStr);
     }
 
     for (const edge of graph.edges) {
+        // Normalize edge labels to always be arrays
+        const labels = Array.isArray(edge.label) ? edge.label : [edge.label];
         const edgeStr = JSON.stringify({
-            source: edge.source,
-            target: edge.target,
-            properties: JSON.stringify(edge.label),
+            source: String(edge.source),
+            target: String(edge.target),
+            properties: JSON.stringify(labels),
         });
-        await insertEdgeStmt.run(edge.source, edge.target, edgeStr);
+        await insertEdgeStmt.run(String(edge.source), String(edge.target), edgeStr);
     }
 
     await insertNodeStmt.finalize();
@@ -76,13 +81,32 @@ async function writeGraphToDB(
 }
 
 async function main() {
-    const db = await open({
-        filename: "arguing.sqlite",
-        driver: sqlite3.Database,
-    });
-    const graph = await readGraphFromFile("graph.json");
-    await writeGraphToDB(graph, db);
-    await db.close();
+    const config: Config = parseConfig();
+    const logger = new Logger(config.logLevel);
+    
+    try {
+        const db = await open({
+            filename: config.outputFile,
+            driver: sqlite3.Database,
+        });
+        
+        logger.info("Reading graph data...");
+        const graph = await readGraphFromFile(config.inputFile);
+        logger.info(`Loaded ${graph.nodes.length} nodes and ${graph.edges.length} edges`);
+        
+        logger.info("Writing to database...");
+        await writeGraphToDB(graph, db);
+        await db.close();
+        
+        logger.info(`Successfully created ${config.outputFile} database!`);
+    } catch (error) {
+        if (error instanceof Error) {
+            logger.error(error.message);
+        } else {
+            logger.error(`An unexpected error occurred: ${error}`);
+        }
+        process.exit(1);
+    }
 }
 
 main();
