@@ -1,6 +1,7 @@
 import js from '@eslint/js';
 import typescript from '@typescript-eslint/eslint-plugin';
 import parser from '@typescript-eslint/parser';
+import globals from 'globals';
 
 export default [
   {
@@ -12,6 +13,7 @@ export default [
         sourceType: 'module'
       },
       globals: {
+        ...globals.node,
         console: 'readonly',
         process: 'readonly',
         Buffer: 'readonly',
