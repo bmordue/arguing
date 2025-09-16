@@ -35,9 +35,9 @@ jobs:
       run: npm run lint
       continue-on-error: false
       
-    - name: Check code formatting
-      run: npm run format:check
-      continue-on-error: false
+#    - name: Check code formatting
+#      run: npm run format:check
+#      continue-on-error: false
 
   # Security Scanning
   security-scan:

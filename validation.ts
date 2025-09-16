@@ -1,7 +1,7 @@
 import { Node, Edge, Graph } from './types';
 
 // Validation functions
-export function validateNode(node: any, index: number): void {
+export function validateNode(node: Node, index: number): void {
     if (!node || typeof node !== 'object') {
         throw new Error(`Node at index ${index} is not a valid object`);
     }
@@ -13,7 +13,7 @@ export function validateNode(node: any, index: number): void {
     }
 }
 
-export function validateEdge(edge: any, index: number): void {
+export function validateEdge(edge: Edge, index: number): void {
     if (!edge || typeof edge !== 'object') {
         throw new Error(`Edge at index ${index} is not a valid object`);
     }
@@ -28,7 +28,7 @@ export function validateEdge(edge: any, index: number): void {
     }
 }
 
-export function validateGraph(graph: any): Graph {
+export function validateGraph(graph: Graph): Graph {
     if (!graph || typeof graph !== 'object') {
         throw new Error('Graph data is not a valid object');
     }
@@ -42,12 +42,12 @@ export function validateGraph(graph: any): Graph {
     }
 
     // Validate each node
-    graph.nodes.forEach((node: any, index: number) => {
+    graph.nodes.forEach((node: Node, index: number) => {
         validateNode(node, index);
     });
 
     // Validate each edge
-    graph.edges.forEach((edge: any, index: number) => {
+    graph.edges.forEach((edge: Edge, index: number) => {
         validateEdge(edge, index);
     });
 
