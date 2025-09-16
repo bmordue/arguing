@@ -1,0 +1,54 @@
+.input {
+  box-sizing: border-box;
+  
+  /* Focus styles for accessibility */
+}
+
+.input:focus {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+}
+
+.input:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.input:focus-visible {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+}
+
+/* Component-specific styles */
+
+.input {
+  padding: 8px 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+  transition: border-color 0.2s ease;
+  width: 100%;
+}
+
+.input:focus {
+  border-color: #007bff;
+}
+
+.input.error {
+  border-color: #dc3545;
+}
+
+.input:disabled {
+  background-color: #f8f9fa;
+  cursor: not-allowed;
+}
+
+/* Responsive design */
+@media (prefers-reduced-motion: reduce) {
+  .input * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
