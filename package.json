@@ -1,28 +1,41 @@
 {
   "name": "arguing",
   "version": "0.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Argument analysis tool with component library",
+  "main": "built/app.js",
   "scripts": {
     "prestart": "npx tsc",
     "start": "node built/app.js",
     "test": "npx tsc && node built/test.js",
-    "build": "npx tsc"
+    "build": "npx tsc",
+    "generate-components": "npx tsc && node built/src/templates/generate-components.js",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/react": "^19.1.13",
+    "@types/react-dom": "^19.1.9",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
     "sqlite": "^5.1.1",
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {
-        "@eslint/js": "^9.34.0",
-        "@types/node": "^24.3.0",
-        "@typescript-eslint/eslint-plugin": "^8.42.0",
-        "@typescript-eslint/parser": "^8.42.0",
-        "audit-ci": "^7.1.0",
-        "eslint": "^9.34.0",
-        "prettier": "^3.6.2",
-        "typescript": "^5.9.2"
-    }
+    "@eslint/js": "^9.34.0",
+    "@storybook/addon-essentials": "^8.6.14",
+    "@storybook/addon-interactions": "^8.6.14",
+    "@storybook/react": "^8.6.14",
+    "@storybook/react-webpack5": "^8.6.14",
+    "@storybook/testing-library": "^0.2.2",
+    "@types/node": "^24.3.0",
+    "@typescript-eslint/eslint-plugin": "^8.42.0",
+    "@typescript-eslint/parser": "^8.42.0",
+    "audit-ci": "^7.1.0",
+    "eslint": "^9.34.0",
+    "prettier": "^3.6.2",
+    "typescript": "^5.9.2",
+    "webpack": "^5.101.3"
+  }
 }
