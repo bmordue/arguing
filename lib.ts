@@ -10,7 +10,7 @@ export interface Node {
     id: string;
     label: string;
     type: string;
-    [key: string]: any; // Allow other properties
+    [key: string]: unknown; // Allow other properties
 }
 
 export interface Edge {
@@ -99,8 +99,8 @@ export async function importFromCsv(db: Database, inputFile: string): Promise<Gr
     const edgeRecords = csvParse(edgeContents, { columns: true, skip_empty_lines: true });
 
     const graph: Graph = {
-        nodes: nodeRecords.map((r: any) => ({ id: r.id, label: r.label, type: r.type })),
-        edges: edgeRecords.map((r: any) => ({ source: r.source, target: r.target, label: [r.label] }))
+        nodes: nodeRecords.map((r) => ({ id: r.id, label: r.label, type: r.type })),
+        edges: edgeRecords.map((r) => ({ source: r.source, target: r.target, label: [r.label] }))
     };
 
     await insertGraphIntoDb(db, graph);
@@ -117,12 +117,12 @@ export async function importFromXml(db: Database, inputFile: string): Promise<Gr
     const xmlObject = parser.parse(xmlContent);
 
     const graph: Graph = {
-        nodes: xmlObject.graph.nodes.node.map((n: any) => ({
+        nodes: xmlObject.graph.nodes.node.map((n) => ({
             id: n['@_id'],
             type: n['@_type'],
             label: n.label
         })),
-        edges: xmlObject.graph.edges.edge.map((e: any) => ({
+        edges: xmlObject.graph.edges.edge.map((e) => ({
             source: e['@_source'],
             target: e['@_target'],
             label: [e.label]

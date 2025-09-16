@@ -13,36 +13,41 @@ import {
 } from "./lib";
 
 async function main() {
-    yargs(hideBin(process.argv))
+    return yargs(hideBin(process.argv))
         .command('import <format> <file>', 'Import data from a file into the database', (yargs) => {
             return yargs
                 .positional('format', {
                     describe: 'the format of the input file',
-                    choices: ['json', 'csv', 'xml', 'yaml'],
-                    demandOption: true,
+                    type: 'string',
                 })
                 .positional('file', {
-                    describe: 'the path to the input file',
+                    describe: 'the input file',
                     type: 'string',
-                    demandOption: true,
-                })
+                });
         }, async (argv) => {
             const db = await openDb("arguing.sqlite");
             console.log(`Importing from ${argv.file} in ${argv.format} format...`);
 
-            if (argv.format === 'json') {
-                const graph = await importFromJson(db, argv.file);
-                console.log(`Successfully imported ${graph.nodes.length} nodes and ${graph.edges.length} edges.`);
-            } else if (argv.format === 'csv') {
-                const graph = await importFromCsv(db, argv.file);
-                console.log(`Successfully imported ${graph.nodes.length} nodes and ${graph.edges.length} edges.`);
-            } else if (argv.format === 'xml') {
-                const graph = await importFromXml(db, argv.file);
-                console.log(`Successfully imported ${graph.nodes.length} nodes and ${graph.edges.length} edges.`);
-            } else if (argv.format === 'yaml') {
-                const graph = await importFromYaml(db, argv.file);
-                console.log(`Successfully imported ${graph.nodes.length} nodes and ${graph.edges.length} edges.`);
+            const file = argv.file as string;
+            if (!file) throw new Error('Input file is required');
+            let graph;
+            switch (argv.format) {
+                case 'json':
+                    graph = await importFromJson(db, file);
+                    break;
+                case 'csv':
+                    graph = await importFromCsv(db, file);
+                    break;
+                case 'xml':
+                    graph = await importFromXml(db, file);
+                    break;
+                case 'yaml':
+                    graph = await importFromYaml(db, file);
+                    break;
+                default:
+                    throw new Error('Unknown format');
             }
+            console.log(`Successfully imported ${graph.nodes.length} nodes and ${graph.edges.length} edges.`);
 
             await db.close();
         })

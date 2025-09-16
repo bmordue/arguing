@@ -1,3 +1,4 @@
+/* eslint-env jest */
 import {
     openDb,
     importFromJson,
@@ -11,7 +12,6 @@ import {
     Graph,
 } from '../lib';
 import { rm, readFile } from 'fs/promises';
-import { join } from 'path';
 
 describe('Data Import/Export', () => {
     const dbPath = './test.sqlite';
@@ -24,8 +24,8 @@ describe('Data Import/Export', () => {
             await rm('./test_export_edges.csv', { force: true });
             await rm('./test_export.xml', { force: true });
             await rm('./test_export.yaml', { force: true });
-        } catch (error) {
-            // This catch block might not be necessary with force: true, but it's safe to keep.
+        } catch {
+            // Ignore errors
         }
     });
 
