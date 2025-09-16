@@ -42,7 +42,41 @@ Arguments are modeled as directed graphs where:
 
 ## Usage
 
-1. **Prepare your argument data** in JSON format (see [Data Format](#data-format) below)
+This tool provides `import` and `export` commands to manage argument data in the SQLite database.
+
+### Importing Data
+
+To import data from a file, use the `import` command:
+```bash
+node built/app.js import <format> <file>
+```
+-   `<format>` can be `json`, `csv`, `xml`, or `yaml`.
+-   `<file>` is the path to the input file.
+
+**Example:**
+```bash
+node built/app.js import json example_graph.json
+```
+
+For CSV import, the tool expects two files: `<file>_nodes.csv` and `<file>_edges.csv`. You should provide the base name as the `<file>` argument.
+
+### Exporting Data
+
+To export data from the database, use the `export` command:
+```bash
+node built/app.js export <format> <file>
+```
+-   `<format>` can be `json`, `csv`, `xml`, or `yaml`.
+-   `<file>` is the path to the output file.
+
+**Example:**
+```bash
+node built/app.js export json export_data.json
+```
+
+For CSV export, the tool will create two files: `<file>_nodes.csv` and `<file>_edges.csv`.
+
+### Basic
 
 2. **Basic usage:**
    ```bash
@@ -211,6 +245,10 @@ JOIN (SELECT id, json_extract(body, '$.label') as label FROM nodes) s ON e.sourc
 JOIN (SELECT id, json_extract(body, '$.label') as label FROM nodes) t ON e.target = t.id
 WHERE json_extract(e.properties, '$.properties') LIKE '%Because%';
 ```
+
+## Known Issues
+
+- The `graph.json` file included in the repository is currently malformed and will cause the import process to fail. It should not be used for testing until it is corrected. The `example_graph.json` file is a valid example of the expected format.
 
 ## Contributing
 

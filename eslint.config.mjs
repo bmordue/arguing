@@ -14,6 +14,7 @@ export default [
       },
       globals: {
         ...globals.node,
+        ...globals.jest,
         console: 'readonly',
         process: 'readonly',
         Buffer: 'readonly',
