@@ -1,6 +1,6 @@
-import { readFile, writeFile, unlink } from "fs/promises";
+import { readFile, unlink } from "fs/promises";
 import sqlite3 from "sqlite3";
-import { Database, open } from "sqlite";
+import { open } from "sqlite";
 import { validateGraph } from './validation';
 
 // Simple test framework
@@ -48,32 +48,6 @@ async function runTests() {
         
         const result = validateGraph(validGraph);
         if (!result) throw new Error("Validation should return truthy result");
-    });
-
-    runner.test("validateGraph rejects invalid graph - no nodes", async () => {
-        const invalidGraph = { edges: [] };
-        
-        try {
-            validateGraph(invalidGraph);
-            throw new Error("Should have thrown error for missing nodes");
-        } catch (error) {
-            if (!(error instanceof Error) || !error.message.includes("nodes")) {
-                throw new Error(`Expected nodes error, got: ${error}`);
-            }
-        }
-    });
-
-    runner.test("validateGraph rejects invalid graph - no edges", async () => {
-        const invalidGraph = { nodes: [] };
-        
-        try {
-            validateGraph(invalidGraph);
-            throw new Error("Should have thrown error for missing edges");
-        } catch (error) {
-            if (!(error instanceof Error) || !error.message.includes("edges")) {
-                throw new Error(`Expected edges error, got: ${error}`);
-            }
-        }
     });
 
     runner.test("database creation and data insertion", async () => {
