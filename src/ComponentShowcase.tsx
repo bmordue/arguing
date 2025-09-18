@@ -2,6 +2,7 @@ import React from 'react';
 import { Button } from './components/Button';
 import { Input } from './components/Input';
 import { Card } from './components/Card';
+import ArgumentMap from './ArgumentMap';
 
 /**
  * Example usage of the generated components
@@ -139,6 +140,11 @@ export const ComponentShowcase: React.FC = () => {
         </ul>
         
         <p>Try navigating with keyboard (Tab, Enter, Space) or using screen reader software.</p>
+      </section>
+
+      <section>
+        <h2>Argument Map</h2>
+        <ArgumentMap />
       </section>
     </div>
   );
