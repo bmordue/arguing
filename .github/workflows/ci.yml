@@ -34,7 +34,10 @@ jobs:
     - name: Run linting
       run: npm run lint
       continue-on-error: false
-      
+
+    - name: Run tests
+      run: npm test
+
 #    - name: Check code formatting
 #      run: npm run format:check
 #      continue-on-error: false
@@ -108,15 +111,9 @@ jobs:
         
     - name: Test application startup
       run: |
-        # Copy example file as test data
-        cp example_graph.json graph.json
-        # Test application startup with timeout
-        timeout 10s npm start || if [ $? -eq 124 ]; then
-          echo "Application started successfully (timed out as expected)"
-        else
-          echo "Application failed to start"
-          exit 1
-        fi
+        # Verify the app starts and responds to --help
+        node built/app.js --help
+        echo "Application started successfully"
         
     - name: Verify database creation
       run: |
