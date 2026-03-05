@@ -95,8 +95,8 @@ export async function importFromCsv(db: Database, inputFile: string): Promise<Gr
     const nodeContents = await readFile(nodeFile, 'utf-8');
     const edgeContents = await readFile(edgeFile, 'utf-8');
 
-    const nodeRecords = csvParse(nodeContents, { columns: true, skip_empty_lines: true });
-    const edgeRecords = csvParse(edgeContents, { columns: true, skip_empty_lines: true });
+    const nodeRecords = csvParse(nodeContents, { columns: true, skip_empty_lines: true }) as Array<{ id: string; label: string; type: string }>;
+    const edgeRecords = csvParse(edgeContents, { columns: true, skip_empty_lines: true }) as Array<{ source: string; target: string; label: string }>;
 
     const graph: Graph = {
         nodes: nodeRecords.map((r) => ({ id: r.id, label: r.label, type: r.type })),
@@ -116,13 +116,25 @@ export async function importFromXml(db: Database, inputFile: string): Promise<Gr
     });
     const xmlObject = parser.parse(xmlContent);
 
+    interface XmlNode {
+        '@_id': string;
+        '@_type': string;
+        label: string;
+    }
+
+    interface XmlEdge {
+        '@_source': string;
+        '@_target': string;
+        label: string;
+    }
+
     const graph: Graph = {
-        nodes: xmlObject.graph.nodes.node.map((n) => ({
+        nodes: xmlObject.graph.nodes.node.map((n: XmlNode) => ({
             id: n['@_id'],
             type: n['@_type'],
             label: n.label
         })),
-        edges: xmlObject.graph.edges.edge.map((e) => ({
+        edges: xmlObject.graph.edges.edge.map((e: XmlEdge) => ({
             source: e['@_source'],
             target: e['@_target'],
             label: [e.label]
