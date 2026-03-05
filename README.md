@@ -45,25 +45,28 @@ Arguments are modeled as directed graphs where:
 1. **Prepare your argument data** in JSON format (see [Data Format](#data-format) below)
 
 2. **Basic usage:**
-   ```bash
-   npm start
-   ```
-   This will process `graph.json` and create `arguing.sqlite`.
+
+    ```bash
+    npm start
+    ```
+
+    This will process `graph.json` and create `arguing.sqlite`.
 
 3. **Advanced usage with options:**
-   ```bash
-   npm start -- --input my_data.json --output results.sqlite --log-level debug
-   ```
+
+    ```bash
+    npm start -- --input my_data.json --output results.sqlite --log-level debug
+    ```
 
 4. **See all available options:**
-   ```bash
-   npm start -- --help
-   ```
+    ```bash
+    npm start -- --help
+    ```
 
 ### Command Line Options
 
 - `-i, --input <file>`: Specify input JSON file (default: graph.json)
-- `-o, --output <file>`: Specify output SQLite file (default: arguing.sqlite)  
+- `-o, --output <file>`: Specify output SQLite file (default: arguing.sqlite)
 - `-l, --log-level <level>`: Set logging level: error, warn, info, debug (default: info)
 - `-h, --help`: Show help message
 
@@ -76,6 +79,7 @@ npm test
 ```
 
 The test suite validates:
+
 - Input data validation
 - Database creation and operations
 - File format compatibility
@@ -110,10 +114,11 @@ The test suite validates:
 ```
 
 ### Node Properties
+
 - `id` (string|number): Unique identifier (flexible format support)
 - `label` (string): The actual text of the argument component
 - `type` (string, optional): Type of argument component (claim, premise, conclusion, rebuttal, etc.)
-  - Defaults to 'node' if not specified
+    - Defaults to 'node' if not specified
 
 ### Edge Properties
 
@@ -174,9 +179,10 @@ npx tsc
 ```
 
 ### File Structure
+
 - `app.ts` - Main application logic and workflow orchestration
 - `types.ts` - TypeScript interfaces and configuration management
-- `validation.ts` - Input validation functions  
+- `validation.ts` - Input validation functions
 - `logger.ts` - Structured logging utility
 - `test.ts` - Comprehensive test suite
 - `package.json` - Project configuration and dependencies

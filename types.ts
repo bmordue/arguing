@@ -18,36 +18,36 @@ export interface Graph {
 export interface Config {
     inputFile: string;
     outputFile: string;
-    logLevel: 'error' | 'warn' | 'info' | 'debug';
+    logLevel: "error" | "warn" | "info" | "debug";
 }
 
 export const DEFAULT_CONFIG: Config = {
-    inputFile: 'graph.json',
-    outputFile: 'arguing.sqlite',
-    logLevel: 'info'
+    inputFile: "graph.json",
+    outputFile: "arguing.sqlite",
+    logLevel: "info",
 };
 
 // Parse command line arguments for basic configuration
 export function parseConfig(): Config {
     const config = { ...DEFAULT_CONFIG };
     const args = process.argv.slice(2);
-    
+
     for (let i = 0; i < args.length; i++) {
         const arg = args[i];
-        
-        if (arg === '--input' || arg === '-i') {
+
+        if (arg === "--input" || arg === "-i") {
             config.inputFile = args[i + 1];
             i++;
-        } else if (arg === '--output' || arg === '-o') {
+        } else if (arg === "--output" || arg === "-o") {
             config.outputFile = args[i + 1];
             i++;
-        } else if (arg === '--log-level' || arg === '-l') {
-            const level = args[i + 1] as Config['logLevel'];
-            if (['error', 'warn', 'info', 'debug'].includes(level)) {
+        } else if (arg === "--log-level" || arg === "-l") {
+            const level = args[i + 1] as Config["logLevel"];
+            if (["error", "warn", "info", "debug"].includes(level)) {
                 config.logLevel = level;
             }
             i++;
-        } else if (arg === '--help' || arg === '-h') {
+        } else if (arg === "--help" || arg === "-h") {
             console.log(`
 Usage: npm start [options]
 
@@ -64,6 +64,6 @@ Examples:
             process.exit(0);
         }
     }
-    
+
     return config;
 }

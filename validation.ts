@@ -1,20 +1,20 @@
-import { Node, Edge, Graph } from './types';
+import { Graph } from "./types";
 
 // Validation functions
 export function validateNode(node: any, index: number): void {
-    if (!node || typeof node !== 'object') {
+    if (!node || typeof node !== "object") {
         throw new Error(`Node at index ${index} is not a valid object`);
     }
     if (!node.id && node.id !== 0) {
         throw new Error(`Node at index ${index} missing required 'id' field`);
     }
-    if (!node.label || typeof node.label !== 'string') {
+    if (!node.label || typeof node.label !== "string") {
         throw new Error(`Node at index ${index} missing or invalid 'label' field`);
     }
 }
 
 export function validateEdge(edge: any, index: number): void {
-    if (!edge || typeof edge !== 'object') {
+    if (!edge || typeof edge !== "object") {
         throw new Error(`Edge at index ${index} is not a valid object`);
     }
     if (!edge.source && edge.source !== 0) {
@@ -29,14 +29,14 @@ export function validateEdge(edge: any, index: number): void {
 }
 
 export function validateGraph(graph: any): Graph {
-    if (!graph || typeof graph !== 'object') {
-        throw new Error('Graph data is not a valid object');
+    if (!graph || typeof graph !== "object") {
+        throw new Error("Graph data is not a valid object");
     }
-    
+
     if (!Array.isArray(graph.nodes)) {
         throw new Error('Graph must contain a "nodes" array');
     }
-    
+
     if (!Array.isArray(graph.edges)) {
         throw new Error('Graph must contain an "edges" array');
     }
