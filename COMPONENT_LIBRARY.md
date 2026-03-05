@@ -5,6 +5,7 @@ This document describes the UI component library that has been added to the Argu
 ## Overview
 
 The component library provides accessible, TypeScript-ready React components with:
+
 - Strong TypeScript interfaces
 - Built-in accessibility features (ARIA, keyboard navigation)
 - Storybook stories for documentation
@@ -14,44 +15,53 @@ The component library provides accessible, TypeScript-ready React components wit
 ## Components
 
 ### Button
+
 Interactive button component with multiple variants and states.
 
 **Props:**
+
 - `variant`: 'primary' | 'secondary' | 'outline' | 'ghost'
-- `size`: 'small' | 'medium' | 'large'  
+- `size`: 'small' | 'medium' | 'large'
 - `disabled`: boolean
 - `loading`: boolean
 - `onClick`: click handler
 
 **Accessibility:**
+
 - Keyboard navigation (Enter/Space)
 - Focus management
 - Loading state announcements
 
-### Input  
+### Input
+
 Text input component with validation states.
 
 **Props:**
+
 - `type`: 'text' | 'email' | 'password' | 'number' | 'search'
 - `value`, `placeholder`, `disabled`, `required`
 - `error`: boolean for error state
 - `errorMessage`: string
 
 **Accessibility:**
+
 - Required aria-label or aria-describedby
 - Error state announcements
 - Focus management
 
 ### Card
+
 Content container component with optional interactivity.
 
 **Props:**
+
 - `title`: optional card title
-- `description`: optional card description  
+- `description`: optional card description
 - `clickable`: makes the entire card clickable
 - `elevation`: 'none' | 'low' | 'medium' | 'high'
 
 **Accessibility:**
+
 - Keyboard navigation when clickable
 - Proper heading hierarchy
 - Focus management
@@ -67,7 +77,7 @@ import { Button, Input, Card } from './src/components';
 </Button>
 
 // Input example
-<Input 
+<Input
   type="email"
   placeholder="Enter email..."
   aria-label="Email address"
@@ -75,9 +85,9 @@ import { Button, Input, Card } from './src/components';
 />
 
 // Card example
-<Card 
+<Card
   title="Card Title"
-  clickable 
+  clickable
   onClick={handleCardClick}
 >
   Card content goes here
@@ -95,6 +105,7 @@ node src/templates/generate-components.js
 ```
 
 This creates:
+
 - React component with TypeScript
 - CSS styles with accessibility features
 - Storybook stories
@@ -152,6 +163,7 @@ All components include:
 ## Browser Support
 
 Components work in modern browsers that support:
+
 - ES2016+
 - CSS custom properties
 - CSS Grid/Flexbox
