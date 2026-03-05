@@ -55,7 +55,19 @@ Arguments are modeled as directed graphs where:
    npm start -- --input my_data.json --output results.sqlite --log-level debug
    ```
 
-4. **See all available options:**
+4. **Export to linked data formats:**
+   ```bash
+   # JSON-LD (for semantic web and knowledge graphs)
+   npm start -- --input my_data.json --output results.jsonld --format jsonld
+
+   # Turtle RDF (compact, human-readable RDF)
+   npm start -- --input my_data.json --output results.ttl --format turtle
+
+   # N-Triples RDF (line-by-line, machine-readable RDF)
+   npm start -- --input my_data.json --output results.nt --format ntriples
+   ```
+
+5. **See all available options:**
    ```bash
    npm start -- --help
    ```
@@ -63,7 +75,8 @@ Arguments are modeled as directed graphs where:
 ### Command Line Options
 
 - `-i, --input <file>`: Specify input JSON file (default: graph.json)
-- `-o, --output <file>`: Specify output SQLite file (default: arguing.sqlite)  
+- `-o, --output <file>`: Specify output file (default: arguing.sqlite)
+- `-f, --format <fmt>`: Output format: `sqlite`, `jsonld`, `turtle`, `ntriples` (default: sqlite)
 - `-l, --log-level <level>`: Set logging level: error, warn, info, debug (default: info)
 - `-h, --help`: Show help message
 
@@ -120,6 +133,100 @@ The test suite validates:
 - `source` (string): ID of the source node
 - `target` (string): ID of the target node
 - `label` (string[]): Array of relationship labels (e.g., ["Because"], ["Therefore"])
+
+## Linked Data / Semantic Web Output
+
+The tool can export argument graphs to **linked data** formats compatible with the semantic web. This enables data discovery, integration with knowledge graphs, and consumption by RDF-aware tools and crawlers.
+
+### Vocabularies Used
+
+| Prefix   | Namespace                              | Purpose                                   |
+|----------|----------------------------------------|-------------------------------------------|
+| `arg:`   | `https://example.org/argument#`        | Argument-specific types and properties    |
+| `schema:` | `https://schema.org/`                 | Schema.org (e.g. `schema:name` for labels) |
+| `dc:`    | `http://purl.org/dc/elements/1.1/`     | Dublin Core metadata elements             |
+| `foaf:`  | `http://xmlns.com/foaf/0.1/`           | FOAF (Friend of a Friend) vocabulary      |
+| `rdf:`   | `http://www.w3.org/1999/02/22-rdf-syntax-ns#` | RDF core vocabulary              |
+
+### Argument Ontology
+
+Node types are mapped to semantic types:
+
+| Input `type`  | Linked Data type    |
+|---------------|---------------------|
+| `claim`       | `arg:Claim`         |
+| `premise`     | `arg:Premise`       |
+| `conclusion`  | `arg:Conclusion`    |
+| `rebuttal`    | `arg:Rebuttal`      |
+| *(default)*   | `arg:ArgumentNode`  |
+
+Edge labels are mapped to RDF predicates:
+
+| Edge `label`  | RDF predicate       |
+|---------------|---------------------|
+| `Because`     | `arg:because`       |
+| `Therefore`   | `arg:therefore`     |
+| *(other)*     | `arg:relatedTo`     |
+
+### JSON-LD Output
+
+JSON-LD embeds a `@context` so that any JSON-LD processor can interpret the data as RDF.
+
+```json
+{
+  "@context": {
+    "schema": "https://schema.org/",
+    "arg": "https://example.org/argument#",
+    "dc": "http://purl.org/dc/elements/1.1/",
+    "foaf": "http://xmlns.com/foaf/0.1/",
+    "label": "schema:name",
+    "source": { "@id": "arg:source", "@type": "@id" },
+    "target": { "@id": "arg:target", "@type": "@id" }
+  },
+  "@type": "arg:ArgumentGraph",
+  "@graph": [
+    {
+      "@id": "https://example.org/argument#node/1",
+      "@type": "arg:Claim",
+      "schema:name": "16-year-olds should be allowed to vote"
+    },
+    {
+      "@id": "https://example.org/argument#edge/0",
+      "@type": "arg:ArgumentRelation",
+      "arg:source": { "@id": "https://example.org/argument#node/2" },
+      "arg:target": { "@id": "https://example.org/argument#node/1" },
+      "arg:relation": ["arg:because"]
+    }
+  ]
+}
+```
+
+### Turtle Output
+
+Turtle is a concise, human-readable RDF format:
+
+```turtle
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix schema: <https://schema.org/> .
+@prefix arg: <https://example.org/argument#> .
+
+arg:node/1 a arg:Claim ;
+    schema:name "16-year-olds should be allowed to vote" .
+
+arg:edge/0 a arg:ArgumentRelation ;
+    arg:source arg:node/2 ;
+    arg:target arg:node/1 ;
+    arg:relation arg:because .
+```
+
+### N-Triples Output
+
+N-Triples is a line-by-line RDF format suitable for streaming and processing by RDF tools:
+
+```ntriples
+<https://example.org/argument#node/1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://example.org/argument#Claim> .
+<https://example.org/argument#node/1> <https://schema.org/name> "16-year-olds should be allowed to vote" .
+```
 
 ## Database Schema
 
@@ -178,6 +285,8 @@ npx tsc
 - `types.ts` - TypeScript interfaces and configuration management
 - `validation.ts` - Input validation functions  
 - `logger.ts` - Structured logging utility
+- `jsonld.ts` - JSON-LD context definitions and graph serialization
+- `rdf.ts` - RDF serialization (Turtle and N-Triples formats)
 - `test.ts` - Comprehensive test suite
 - `package.json` - Project configuration and dependencies
 - `tsconfig.json` - TypeScript compiler configuration

@@ -1,9 +1,11 @@
 import sqlite3 from "sqlite3";
 import { Database, open } from "sqlite";
-import { readFile } from "fs/promises";
+import { readFile, writeFile } from "fs/promises";
 import { Graph, Config, parseConfig } from './types';
 import { validateGraph } from './validation';
 import { Logger } from './logger';
+import { graphToJsonLd } from './jsonld';
+import { graphToTurtle, graphToNTriples } from './rdf';
 
 async function readGraphFromFile(filename: string): Promise<Graph> {
     try {
@@ -85,20 +87,37 @@ async function main() {
     const logger = new Logger(config.logLevel);
     
     try {
-        const db = await open({
-            filename: config.outputFile,
-            driver: sqlite3.Database,
-        });
-        
         logger.info("Reading graph data...");
         const graph = await readGraphFromFile(config.inputFile);
         logger.info(`Loaded ${graph.nodes.length} nodes and ${graph.edges.length} edges`);
-        
-        logger.info("Writing to database...");
-        await writeGraphToDB(graph, db);
-        await db.close();
-        
-        logger.info(`Successfully created ${config.outputFile} database!`);
+
+        if (config.outputFormat === 'jsonld') {
+            logger.info("Serializing to JSON-LD...");
+            const jsonld = graphToJsonLd(graph);
+            await writeFile(config.outputFile, JSON.stringify(jsonld, null, 2), 'utf-8');
+            logger.info(`Successfully wrote JSON-LD to ${config.outputFile}`);
+        } else if (config.outputFormat === 'turtle') {
+            logger.info("Serializing to Turtle (RDF)...");
+            const turtle = graphToTurtle(graph);
+            await writeFile(config.outputFile, turtle, 'utf-8');
+            logger.info(`Successfully wrote Turtle RDF to ${config.outputFile}`);
+        } else if (config.outputFormat === 'ntriples') {
+            logger.info("Serializing to N-Triples (RDF)...");
+            const ntriples = graphToNTriples(graph);
+            await writeFile(config.outputFile, ntriples, 'utf-8');
+            logger.info(`Successfully wrote N-Triples RDF to ${config.outputFile}`);
+        } else {
+            const db = await open({
+                filename: config.outputFile,
+                driver: sqlite3.Database,
+            });
+
+            logger.info("Writing to database...");
+            await writeGraphToDB(graph, db);
+            await db.close();
+
+            logger.info(`Successfully created ${config.outputFile} database!`);
+        }
     } catch (error) {
         if (error instanceof Error) {
             logger.error(error.message);
