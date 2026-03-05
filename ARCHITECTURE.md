@@ -8,11 +8,28 @@ The **Arguing** application is a TypeScript/Node.js tool that converts structure
 
 ```
 arguing/
-├── app.ts              # Main application entry point
-├── types.ts            # Type definitions and configuration  
+├── app.ts              # Main application entry point (CLI mode)
+├── server.ts           # HTTP API server entry point
+├── types.ts            # Type definitions and configuration
 ├── validation.ts       # Input validation functions
 ├── logger.ts           # Logging utility
 ├── test.ts             # Test suite
+├── api/                # API interoperability layer
+│   ├── auth.ts         # API key authentication
+│   ├── rateLimiter.ts  # Rate limiting
+│   ├── contentNegotiation.ts  # JSON/XML/JSON-LD support
+│   ├── webhookManager.ts      # Webhook system
+│   ├── graphql/
+│   │   └── schema.ts   # GraphQL schema and resolvers
+│   └── routes/v1/      # REST API v1 routes
+│       ├── nodes.ts
+│       ├── edges.ts
+│       ├── graph.ts
+│       └── webhooks.ts
+├── sdk/                # Client SDK libraries
+│   ├── javascript/arguing_client.js
+│   ├── python/arguing_client.py
+│   └── examples/query_graph.js
 ├── README.md           # User documentation
 ├── ARCHITECTURE.md     # This file
 ├── package.json        # Node.js dependencies
@@ -96,7 +113,54 @@ CREATE TABLE edges (
 );
 ```
 
-## Recent Improvements (2024)
+## API Interoperability Layer
+
+The application includes an HTTP API server (`server.ts`) that exposes the graph data for external integration.
+
+### API Architecture
+
+```
+server.ts               # Express HTTP server entry point
+api/
+├── auth.ts             # API key authentication middleware
+├── rateLimiter.ts      # Rate limiting middleware (express-rate-limit)
+├── contentNegotiation.ts  # Content type detection and serialization
+├── webhookManager.ts   # Webhook registration and event dispatch
+├── graphql/
+│   └── schema.ts       # GraphQL schema and resolvers
+└── routes/v1/
+    ├── nodes.ts        # GET /api/v1/nodes, /api/v1/nodes/:id
+    ├── edges.ts        # GET /api/v1/edges, /api/v1/edges/filter
+    ├── graph.ts        # GET /api/v1/graph
+    └── webhooks.ts     # CRUD /api/v1/webhooks
+```
+
+### API Features
+
+1. **Authentication**: API key authentication via `Authorization: Bearer` or `X-API-Key` headers.
+2. **API Versioning**: URL-based versioning (`/api/v1/`).
+3. **Content Negotiation**: Supports JSON (default), XML, and JSON-LD via `Accept` header.
+4. **Rate Limiting**: 100 req/15min for general API; 10 req/15min for webhook registration.
+5. **GraphQL**: Full GraphQL schema at `/graphql` with queries for nodes, edges, and graph.
+6. **Webhooks**: Register HTTP callbacks for `graph.updated`, `node.created`, `edge.created` events.
+
+### SDK / Client Libraries
+
+```
+sdk/
+├── javascript/arguing_client.js   # JavaScript/Node.js client
+├── python/arguing_client.py       # Python client (stdlib only)
+└── examples/query_graph.js        # Complete integration example
+```
+
+### Additional Dependencies (API Layer)
+
+- `express` v5 - HTTP server framework
+- `express-rate-limit` - Rate limiting middleware
+- `graphql` - GraphQL core runtime
+- `graphql-http` - GraphQL HTTP server handler
+
+
 
 ### High Priority Fixes
 - ✅ **Input Validation**: Added comprehensive validation for JSON data structure
