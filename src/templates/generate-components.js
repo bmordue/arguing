@@ -1,52 +1,52 @@
-const fs = require('fs').promises;
-const path = require('path');
+const fs = require("fs").promises;
+const path = require("path");
 
 const COMPONENT_CONFIGS = [
-  {
-    name: 'Button',
-    propsInterface: 'ButtonProps',
-    hasChildren: true,
-    accessibility: {
-      keyboardNavigation: true,
-      ariaLabelRequired: false
-    }
-  },
-  {
-    name: 'Input',
-    propsInterface: 'InputProps',
-    hasChildren: false,
-    accessibility: {
-      ariaLabelRequired: true
-    }
-  },
-  {
-    name: 'Card',
-    propsInterface: 'CardProps',
-    hasChildren: true,
-    accessibility: {
-      keyboardNavigation: true
-    }
-  }
+    {
+        name: "Button",
+        propsInterface: "ButtonProps",
+        hasChildren: true,
+        accessibility: {
+            keyboardNavigation: true,
+            ariaLabelRequired: false,
+        },
+    },
+    {
+        name: "Input",
+        propsInterface: "InputProps",
+        hasChildren: false,
+        accessibility: {
+            ariaLabelRequired: true,
+        },
+    },
+    {
+        name: "Card",
+        propsInterface: "CardProps",
+        hasChildren: true,
+        accessibility: {
+            keyboardNavigation: true,
+        },
+    },
 ];
 
 function generateComponentTemplate(config) {
-  const { name, propsInterface, hasChildren } = config;
-  
-  return `import React, { forwardRef } from 'react';
+    const { name, propsInterface, hasChildren } = config;
+
+    return `import React, { forwardRef } from 'react';
 import { ${propsInterface} } from '../types/component-props';
 import './${name}.css';
 
 /**
  * ${name} component with accessibility support
  */
-export const ${name} = forwardRef<HTML${name === 'Input' ? 'Input' : 'Div'}Element, ${propsInterface}>(
+export const ${name} = forwardRef<HTML${name === "Input" ? "Input" : "Div"}Element, ${propsInterface}>(
   ({ 
     className = '',
     'aria-label': ariaLabel,
     'aria-describedby': ariaDescribedby,
     tabIndex,
     'data-testid': testId,
-    ${hasChildren ? 'children,' : ''}
+    ${hasChildren ? "children," : ""}
     ${generatePropDestructuring(config)},
     ...props 
   }, ref) => {
@@ -75,18 +75,18 @@ export default ${name};`;
 }
 
 function generatePropDestructuring(config) {
-  switch (config.name) {
-    case 'Button':
-      return `
+    switch (config.name) {
+        case "Button":
+            return `
     variant = 'primary',
     size = 'medium',
     disabled = false,
     loading = false,
     onClick,
     type = 'button'`;
-    
-    case 'Input':
-      return `
+
+        case "Input":
+            return `
     value,
     defaultValue,
     placeholder,
@@ -98,90 +98,98 @@ function generatePropDestructuring(config) {
     onChange,
     onFocus,
     onBlur`;
-    
-    case 'Card':
-      return `
+
+        case "Card":
+            return `
     title,
     description,
     clickable = false,
     onClick,
     elevation = 'low'`;
-    
-    default:
-      return '';
-  }
+
+        default:
+            return "";
+    }
 }
 
 function generateAccessibilityChecks(config) {
-  if (config.accessibility?.ariaLabelRequired) {
-    return `
+    if (config.accessibility?.ariaLabelRequired) {
+        return `
     // Accessibility check: ensure aria-label is provided for screen readers
     if (!ariaLabel && !ariaDescribedby) {
       console.warn('${config.name} component should have an aria-label or aria-describedby for accessibility');
     }`;
-  }
-  return '';
+    }
+    return "";
 }
 
 function getHtmlElement(config) {
-  switch (config.name) {
-    case 'Button':
-      return 'button';
-    case 'Input':
-      return 'input';
-    default:
-      return 'div';
-  }
+    switch (config.name) {
+        case "Button":
+            return "button";
+        case "Input":
+            return "input";
+        default:
+            return "div";
+    }
 }
 
 function generateHtmlAttributes(config) {
-  const attrs = [];
-  
-  // Add component-specific attributes
-  switch (config.name) {
-    case 'Button':
-      attrs.push('type={type}', 'disabled={disabled || loading}', 'onClick={onClick}');
-      break;
-    case 'Input':
-      attrs.push('type={type}', 'value={value}', 'defaultValue={defaultValue}', 
-                'placeholder={placeholder}', 'disabled={disabled}', 'required={required}',
-                'onChange={onChange}', 'onFocus={onFocus}', 'onBlur={onBlur}');
-      break;
-    case 'Card':
-      attrs.push('onClick={clickable ? onClick : undefined}');
-      break;
-  }
-  
-  return attrs.join('\n        ');
+    const attrs = [];
+
+    // Add component-specific attributes
+    switch (config.name) {
+        case "Button":
+            attrs.push("type={type}", "disabled={disabled || loading}", "onClick={onClick}");
+            break;
+        case "Input":
+            attrs.push(
+                "type={type}",
+                "value={value}",
+                "defaultValue={defaultValue}",
+                "placeholder={placeholder}",
+                "disabled={disabled}",
+                "required={required}",
+                "onChange={onChange}",
+                "onFocus={onFocus}",
+                "onBlur={onBlur}"
+            );
+            break;
+        case "Card":
+            attrs.push("onClick={clickable ? onClick : undefined}");
+            break;
+    }
+
+    return attrs.join("\n        ");
 }
 
 function generateComponentContent(config) {
-  switch (config.name) {
-    case 'Button':
-      return `
+    switch (config.name) {
+        case "Button":
+            return `
         {loading && <span className="loading-spinner" aria-hidden="true">⟳</span>}
         {children}`;
-    
-    case 'Input':
-      return '';
-    
-    case 'Card':
-      return `
+
+        case "Input":
+            return "";
+
+        case "Card":
+            return `
         {title && <h3 className="card-title">{title}</h3>}
         {description && <p className="card-description">{description}</p>}
         <div className="card-content">
           {children}
         </div>`;
-    
-    default:
-      return config.hasChildren ? '{children}' : '';
-  }
+
+        default:
+            return config.hasChildren ? "{children}" : "";
+    }
 }
 
 function generateCSSTemplate(componentName) {
-  const className = componentName.toLowerCase();
-  
-  return `.${className} {
+    const className = componentName.toLowerCase();
+
+    return `.${className} {
   box-sizing: border-box;
   
   /* Focus styles for accessibility */
@@ -215,11 +223,11 @@ ${generateComponentSpecificCSS(componentName)}
 }
 
 function generateComponentSpecificCSS(componentName) {
-  const className = componentName.toLowerCase();
-  
-  switch (componentName) {
-    case 'Button':
-      return `
+    const className = componentName.toLowerCase();
+
+    switch (componentName) {
+        case "Button":
+            return `
 .${className} {
   padding: 8px 16px;
   border: none;
@@ -285,9 +293,9 @@ function generateComponentSpecificCSS(componentName) {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }`;
-    
-    case 'Input':
-      return `
+
+        case "Input":
+            return `
 .${className} {
   padding: 8px 12px;
   border: 2px solid #e0e0e0;
@@ -311,9 +319,9 @@ function generateComponentSpecificCSS(componentName) {
   background-color: #f8f9fa;
   cursor: not-allowed;
 }`;
-    
-    case 'Card':
-      return `
+
+        case "Card":
+            return `
 .${className} {
   border: 1px solid #e0e0e0;
   border-radius: 8px;
@@ -362,16 +370,16 @@ function generateComponentSpecificCSS(componentName) {
 .card-content {
   margin: 0;
 }`;
-    
-    default:
-      return `/* Add component-specific styles for ${componentName} here */`;
-  }
+
+        default:
+            return `/* Add component-specific styles for ${componentName} here */`;
+    }
 }
 
 function generateStoryTemplate(config) {
-  const { name } = config;
-  
-  return `import type { Meta, StoryObj } from '@storybook/react';
+    const { name } = config;
+
+    return `import type { Meta, StoryObj } from '@storybook/react';
 import { ${name} } from '../components/${name}';
 
 const meta: Meta<typeof ${name}> = {
@@ -395,9 +403,9 @@ ${generateStoryVariants(config)}`;
 }
 
 function generateStoryVariants(config) {
-  switch (config.name) {
-    case 'Button':
-      return `
+    switch (config.name) {
+        case "Button":
+            return `
 export const Primary: Story = {
   args: {
     children: 'Button',
@@ -432,9 +440,9 @@ export const Loading: Story = {
     loading: true
   }
 };`;
-    
-    case 'Input':
-      return `
+
+        case "Input":
+            return `
 export const Default: Story = {
   args: {
     placeholder: 'Enter text...',
@@ -474,9 +482,9 @@ export const Disabled: Story = {
     'aria-label': 'Disabled text input'
   }
 };`;
-    
-    case 'Card':
-      return `
+
+        case "Card":
+            return `
 export const Basic: Story = {
   args: {
     children: 'Card content goes here'
@@ -514,57 +522,57 @@ export const HighElevation: Story = {
     children: 'Card with high elevation shadow'
   }
 };`;
-    
-    default:
-      return `
+
+        default:
+            return `
 export const Default: Story = {
   args: {}
 };`;
-  }
+    }
 }
 
 async function generateComponent(config) {
-  const { name } = config;
-  const componentDir = path.join(process.cwd(), 'src', 'components');
-  const storiesDir = path.join(process.cwd(), 'src', 'stories');
-  
-  // Ensure directories exist
-  await fs.mkdir(componentDir, { recursive: true });
-  await fs.mkdir(storiesDir, { recursive: true });
-  
-  // Generate component file
-  const componentContent = generateComponentTemplate(config);
-  await fs.writeFile(path.join(componentDir, `${name}.tsx`), componentContent);
-  
-  // Generate CSS file
-  const cssContent = generateCSSTemplate(name);
-  await fs.writeFile(path.join(componentDir, `${name}.css`), cssContent);
-  
-  // Generate story file
-  const storyContent = generateStoryTemplate(config);
-  await fs.writeFile(path.join(storiesDir, `${name}.stories.tsx`), storyContent);
-  
-  console.log(`✅ Generated ${name} component with story and styles`);
+    const { name } = config;
+    const componentDir = path.join(process.cwd(), "src", "components");
+    const storiesDir = path.join(process.cwd(), "src", "stories");
+
+    // Ensure directories exist
+    await fs.mkdir(componentDir, { recursive: true });
+    await fs.mkdir(storiesDir, { recursive: true });
+
+    // Generate component file
+    const componentContent = generateComponentTemplate(config);
+    await fs.writeFile(path.join(componentDir, `${name}.tsx`), componentContent);
+
+    // Generate CSS file
+    const cssContent = generateCSSTemplate(name);
+    await fs.writeFile(path.join(componentDir, `${name}.css`), cssContent);
+
+    // Generate story file
+    const storyContent = generateStoryTemplate(config);
+    await fs.writeFile(path.join(storiesDir, `${name}.stories.tsx`), storyContent);
+
+    console.log(`✅ Generated ${name} component with story and styles`);
 }
 
 async function main() {
-  console.log('🚀 Generating component library stubs...');
-  
-  for (const config of COMPONENT_CONFIGS) {
-    try {
-      await generateComponent(config);
-    } catch (error) {
-      console.error(`❌ Error generating ${config.name}:`, error);
+    console.log("🚀 Generating component library stubs...");
+
+    for (const config of COMPONENT_CONFIGS) {
+        try {
+            await generateComponent(config);
+        } catch (error) {
+            console.error(`❌ Error generating ${config.name}:`, error);
+        }
     }
-  }
-  
-  console.log('\n🎉 Component generation complete!');
-  console.log('\nGenerated components:');
-  COMPONENT_CONFIGS.forEach(config => {
-    console.log(`  - ${config.name} (/src/components/${config.name}.tsx)`);
-    console.log(`    - Story (/src/stories/${config.name}.stories.tsx)`);
-    console.log(`    - Styles (/src/components/${config.name}.css)`);
-  });
+
+    console.log("\n🎉 Component generation complete!");
+    console.log("\nGenerated components:");
+    COMPONENT_CONFIGS.forEach((config) => {
+        console.log(`  - ${config.name} (/src/components/${config.name}.tsx)`);
+        console.log(`    - Story (/src/stories/${config.name}.stories.tsx)`);
+        console.log(`    - Styles (/src/components/${config.name}.css)`);
+    });
 }
 
 main().catch(console.error);
