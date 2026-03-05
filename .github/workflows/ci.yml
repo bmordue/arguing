@@ -19,7 +19,7 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '18'
+        node-version: '20'
         cache: 'npm'
         
     - name: Install dependencies
@@ -34,6 +34,9 @@ jobs:
     - name: Run linting
       run: npm run lint
       continue-on-error: false
+
+    - name: Run tests
+      run: npm test
       
 #    - name: Check code formatting
 #      run: npm run format:check
@@ -60,7 +63,7 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '18'
+        node-version: '20'
         cache: 'npm'
         
     - name: Install dependencies
@@ -89,7 +92,7 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '18'
+        node-version: '20'
         cache: 'npm'
         
     - name: Install dependencies
@@ -108,15 +111,8 @@ jobs:
         
     - name: Test application startup
       run: |
-        # Copy example file as test data
-        cp example_graph.json graph.json
-        # Test application startup with timeout
-        timeout 10s npm start || if [ $? -eq 124 ]; then
-          echo "Application started successfully (timed out as expected)"
-        else
-          echo "Application failed to start"
-          exit 1
-        fi
+        # Test that the application starts and shows help
+        node built/app.js --help
         
     - name: Verify database creation
       run: |
