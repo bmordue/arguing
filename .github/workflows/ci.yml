@@ -37,7 +37,7 @@ jobs:
 
     - name: Run tests
       run: npm test
-      
+
 #    - name: Check code formatting
 #      run: npm run format:check
 #      continue-on-error: false
@@ -111,8 +111,9 @@ jobs:
         
     - name: Test application startup
       run: |
-        # Test that the application starts and shows help
+        # Verify the app starts and responds to --help
         node built/app.js --help
+        echo "Application started successfully"
         
     - name: Verify database creation
       run: |
