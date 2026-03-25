@@ -15,20 +15,16 @@ export interface Graph {
     edges: Edge[];
 }
 
-export type OutputFormat = 'sqlite' | 'jsonld' | 'turtle' | 'ntriples';
-
 export interface Config {
     inputFile: string;
     outputFile: string;
     logLevel: 'error' | 'warn' | 'info' | 'debug';
-    outputFormat: OutputFormat;
 }
 
 export const DEFAULT_CONFIG: Config = {
     inputFile: 'graph.json',
     outputFile: 'arguing.sqlite',
-    logLevel: 'info',
-    outputFormat: 'sqlite',
+    logLevel: 'info'
 };
 
 // Parse command line arguments for basic configuration
@@ -51,29 +47,19 @@ export function parseConfig(): Config {
                 config.logLevel = level;
             }
             i++;
-        } else if (arg === '--format' || arg === '-f') {
-            const fmt = args[i + 1] as OutputFormat;
-            if (['sqlite', 'jsonld', 'turtle', 'ntriples'].includes(fmt)) {
-                config.outputFormat = fmt;
-            }
-            i++;
         } else if (arg === '--help' || arg === '-h') {
             console.log(`
 Usage: npm start [options]
 
 Options:
   -i, --input <file>      Input JSON file (default: graph.json)
-  -o, --output <file>     Output file (default: arguing.sqlite)
-  -f, --format <fmt>      Output format: sqlite, jsonld, turtle, ntriples (default: sqlite)
+  -o, --output <file>     Output SQLite file (default: arguing.sqlite)  
   -l, --log-level <level> Log level: error, warn, info, debug (default: info)
   -h, --help              Show this help message
 
 Examples:
-  npm start -- --input data.json --output results.sqlite
-  npm start -- --input data.json --output results.jsonld --format jsonld
-  npm start -- --input data.json --output results.ttl --format turtle
-  npm start -- --input data.json --output results.nt --format ntriples
-  npm start -- --log-level debug
+  npm start --input data.json --output results.sqlite
+  npm start --log-level debug
             `);
             process.exit(0);
         }

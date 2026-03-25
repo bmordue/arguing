@@ -1,4 +1,4 @@
-import { Graph } from './types';
+import { Graph } from './lib';
 import { ARG_NS, SCHEMA_NS, DC_NS, FOAF_NS, RDF_NS, getNodeType, getEdgePredicate } from './jsonld';
 
 // Expand a prefixed name like "arg:Claim" to its full IRI

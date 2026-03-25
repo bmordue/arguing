@@ -1,4 +1,4 @@
-import { Graph, Node, Edge } from './types';
+import { Graph, Node, Edge } from './lib';
 
 export const ARG_NS = 'https://example.org/argument#';
 export const SCHEMA_NS = 'https://schema.org/';
