@@ -10,6 +10,9 @@ import {
     exportToCsv,
     exportToXml,
     exportToYaml,
+    exportToJsonLd,
+    exportToTurtle,
+    exportToNTriples,
 } from "./lib";
 
 async function main() {
@@ -55,7 +58,7 @@ async function main() {
             return yargs
                 .positional('format', {
                     describe: 'the format of the output file',
-                    choices: ['json', 'csv', 'xml', 'yaml'],
+                    choices: ['json', 'csv', 'xml', 'yaml', 'jsonld', 'turtle', 'ntriples'],
                     demandOption: true,
                 })
                 .positional('file', {
@@ -74,6 +77,12 @@ async function main() {
                 await exportToXml(db, argv.file);
             } else if (argv.format === 'yaml') {
                 await exportToYaml(db, argv.file);
+            } else if (argv.format === 'jsonld') {
+                await exportToJsonLd(db, argv.file);
+            } else if (argv.format === 'turtle') {
+                await exportToTurtle(db, argv.file);
+            } else if (argv.format === 'ntriples') {
+                await exportToNTriples(db, argv.file);
             }
 
             await db.close();

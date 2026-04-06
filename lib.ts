@@ -4,6 +4,8 @@ import { readFile, writeFile } from "fs/promises";
 import { stringify as csvStringify, parse as csvParse } from 'csv/sync';
 import { XMLBuilder, XMLParser } from 'fast-xml-parser';
 import YAML from 'yaml';
+import { graphToJsonLd } from './jsonld';
+import { graphToTurtle, graphToNTriples } from './rdf';
 
 // --- Interfaces ---
 export interface Node {
@@ -253,4 +255,38 @@ export async function exportToYaml(db: Database, outputFile: string): Promise<vo
 
     await writeFile(outputFile, yamlContent);
     console.log(`Successfully exported ${nodes.length} nodes and ${edges.length} edges to ${outputFile}.`);
+}
+
+// --- Linked Data Export Functions ---
+
+async function readGraphFromDb(db: Database): Promise<Graph> {
+    const nodes = (await db.all("SELECT body FROM nodes")).map(n => JSON.parse(n.body));
+    const dbEdges = await db.all("SELECT source, target, properties FROM edges");
+    const edges = dbEdges.map(e => ({
+        source: e.source,
+        target: e.target,
+        label: JSON.parse(e.properties),
+    }));
+    return { nodes, edges };
+}
+
+export async function exportToJsonLd(db: Database, outputFile: string): Promise<void> {
+    const graph = await readGraphFromDb(db);
+    const jsonld = graphToJsonLd(graph);
+    await writeFile(outputFile, JSON.stringify(jsonld, null, 2));
+    console.log(`Successfully exported ${graph.nodes.length} nodes and ${graph.edges.length} edges to ${outputFile} as JSON-LD.`);
+}
+
+export async function exportToTurtle(db: Database, outputFile: string): Promise<void> {
+    const graph = await readGraphFromDb(db);
+    const turtle = graphToTurtle(graph);
+    await writeFile(outputFile, turtle);
+    console.log(`Successfully exported ${graph.nodes.length} nodes and ${graph.edges.length} edges to ${outputFile} as Turtle RDF.`);
+}
+
+export async function exportToNTriples(db: Database, outputFile: string): Promise<void> {
+    const graph = await readGraphFromDb(db);
+    const ntriples = graphToNTriples(graph);
+    await writeFile(outputFile, ntriples);
+    console.log(`Successfully exported ${graph.nodes.length} nodes and ${graph.edges.length} edges to ${outputFile} as N-Triples RDF.`);
 }
