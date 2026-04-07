@@ -2,6 +2,7 @@ export interface Node {
     id: string | number;
     label: string;
     type?: string;
+    [key: string]: unknown;
 }
 
 export interface Edge {

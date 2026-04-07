@@ -4,25 +4,10 @@ import { readFile, writeFile } from "fs/promises";
 import { stringify as csvStringify, parse as csvParse } from 'csv/sync';
 import { XMLBuilder, XMLParser } from 'fast-xml-parser';
 import YAML from 'yaml';
+import { Node, Edge, Graph } from "./types";
+import { validateGraph } from "./validation";
 
-// --- Interfaces ---
-export interface Node {
-    id: string;
-    label: string;
-    type: string;
-    [key: string]: unknown; // Allow other properties
-}
-
-export interface Edge {
-    source: string;
-    target: string;
-    label: string | string[];
-}
-
-export interface Graph {
-    nodes: Node[];
-    edges: Edge[];
-}
+export { Node, Edge, Graph };
 
 // --- Database Functions ---
 
@@ -57,6 +42,7 @@ export async function initializeDb(db: Database): Promise<void> {
 // --- Core Logic ---
 
 export async function insertGraphIntoDb(db: Database, graph: Graph): Promise<void> {
+    validateGraph(graph);
     await initializeDb(db);
     await db.run("BEGIN TRANSACTION;");
 
