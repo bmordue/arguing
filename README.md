@@ -258,6 +258,27 @@ JOIN (SELECT id, json_extract(body, '$.label') as label FROM nodes) t ON e.targe
 WHERE json_extract(e.properties, '$.properties') LIKE '%Because%';
 ```
 
+### Task Management
+
+This project uses [tssk](https://github.com/bmordue/tssk) for task management and tracking.
+
+#### Key Commands
+
+```bash
+tssk list              # View all tasks
+tssk list -s todo      # Filter by status (todo, in-progress, done, blocked)
+tssk add -t "Title"    # Create a new task
+tssk show <id>         # View task details
+tssk status <id>       # Update task status
+tssk deps              # Manage task dependencies
+```
+
+#### Workflow
+
+1. Check available work: `tssk list`
+2. Claim work: `tssk status <id> in-progress`
+3. When complete: `tssk status <id> done`
+
 ## Known Issues
 
 - The `graph.json` file included in the repository is currently malformed and will cause the import process to fail. It should not be used for testing until it is corrected. The `example_graph.json` file is a valid example of the expected format.
