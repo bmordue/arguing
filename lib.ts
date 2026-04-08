@@ -41,6 +41,20 @@ export async function initializeDb(db: Database): Promise<void> {
 
 // --- Core Logic ---
 
+/**
+ * Sanitizes a string for CSV export to prevent Formula Injection (CSV Injection).
+ * If the string starts with characters that can trigger formula execution
+ * (=, +, -, @, \t, \r), it is prefixed with a single quote (').
+ */
+export function sanitizeForCsv(value: string | number | undefined | null): string {
+    if (value === null || value === undefined) return '';
+    const strValue = String(value);
+    if (strValue.length > 0 && /^[=+\-@\t\r]/.test(strValue)) {
+        return `'${strValue}`;
+    }
+    return strValue;
+}
+
 export async function insertGraphIntoDb(db: Database, graph: Graph): Promise<void> {
     validateGraph(graph);
     await initializeDb(db);
@@ -167,8 +181,16 @@ export async function exportToCsv(db: Database, outputFile: string): Promise<voi
         label: JSON.parse(e.properties)
     }));
 
-    const nodeRecords = nodes.map(n => ({ id: n.id, label: n.label, type: n.type }));
-    const edgeRecords = edges.map(e => ({ source: e.source, target: e.target, label: Array.isArray(e.label) ? e.label.join(',') : e.label }));
+    const nodeRecords = nodes.map(n => ({
+        id: sanitizeForCsv(n.id),
+        label: sanitizeForCsv(n.label),
+        type: sanitizeForCsv(n.type)
+    }));
+    const edgeRecords = edges.map(e => ({
+        source: sanitizeForCsv(e.source),
+        target: sanitizeForCsv(e.target),
+        label: sanitizeForCsv(Array.isArray(e.label) ? e.label.join(',') : e.label)
+    }));
 
     const nodeCsv = csvStringify(nodeRecords, { header: true });
     const edgeCsv = csvStringify(edgeRecords, { header: true });
