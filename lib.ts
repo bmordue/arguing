@@ -12,10 +12,13 @@ export { Node, Edge, Graph };
 // --- Database Functions ---
 
 export async function openDb(filename: string): Promise<Database<sqlite3.Database, sqlite3.Statement>> {
-    return open({
+    const db = await open({
         filename,
         driver: sqlite3.Database,
     });
+    // Enable foreign key constraints for this connection
+    await db.get("PRAGMA foreign_keys = ON;");
+    return db;
 }
 
 export async function initializeDb(db: Database): Promise<void> {
@@ -113,6 +116,8 @@ export async function importFromXml(db: Database, inputFile: string): Promise<Gr
     const parser = new XMLParser({
         ignoreAttributes: false,
         attributeNamePrefix: "@_",
+        // Ensure nodes and edges are always treated as arrays to prevent crashes on single elements
+        isArray: (name, jpath) => ['graph.nodes.node', 'graph.edges.edge'].includes(jpath as string),
     });
     const xmlObject = parser.parse(xmlContent);
 
