@@ -7,3 +7,8 @@
 **Vulnerability:** Data exported to CSV was not sanitized, allowing fields starting with characters like `=`, `+`, `-`, or `@` to be interpreted as formulas by spreadsheet applications. This could lead to arbitrary command execution on the user's machine.
 **Learning:** Security focus often leans heavily toward input validation (inbound), but data sanitization for specific export formats (outbound) is equally critical to protect downstream consumers of the data.
 **Prevention:** Implement a dedicated sanitization step for CSV exports that prefixes potentially dangerous starting characters with a single quote (`'`), ensuring they are treated as literal text by spreadsheet engines.
+
+## 2025-05-17 - [SQLite Foreign Key Enforcement and XML Robustness]
+**Vulnerability:** SQLite does not enforce foreign key constraints by default, allowing orphan records (edges pointing to non-existent nodes) which compromises data integrity. Additionally, XML parsing of single-element arrays resulted in TypeErrors/crashes.
+**Learning:** Security and stability often depend on library-specific defaults (like SQLite's FKs or fast-xml-parser's array handling) that may not align with application expectations.
+**Prevention:** Explicitly enable `PRAGMA foreign_keys = ON;` upon every database connection. Use `isArray` configuration in XML parsers to guarantee consistent data structures regardless of element count.
