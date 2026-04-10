@@ -117,7 +117,7 @@ export async function importFromXml(db: Database, inputFile: string): Promise<Gr
         ignoreAttributes: false,
         attributeNamePrefix: "@_",
         // Ensure nodes and edges are always treated as arrays to prevent crashes on single elements
-        isArray: (name, jpath) => ['graph.nodes.node', 'graph.edges.edge'].includes(jpath as string),
+        isArray: (_name: string, jpath: unknown) => ['graph.nodes.node', 'graph.edges.edge'].includes(jpath as string),
     });
     const xmlObject = parser.parse(xmlContent);
 
@@ -134,12 +134,12 @@ export async function importFromXml(db: Database, inputFile: string): Promise<Gr
     }
 
     const graph: Graph = {
-        nodes: xmlObject.graph.nodes.node.map((n: XmlNode) => ({
+        nodes: (xmlObject?.graph?.nodes?.node || []).map((n: XmlNode) => ({
             id: n['@_id'],
             type: n['@_type'],
             label: n.label
         })),
-        edges: xmlObject.graph.edges.edge.map((e: XmlEdge) => ({
+        edges: (xmlObject?.graph?.edges?.edge || []).map((e: XmlEdge) => ({
             source: e['@_source'],
             target: e['@_target'],
             label: [e.label]

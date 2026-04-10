@@ -1,15 +1,37 @@
 import { Node, Edge, Graph } from './types';
 
+// Security constants
+export const MAX_ID_LENGTH = 1024;
+export const MAX_LABEL_LENGTH = 10000;
+export const MAX_TYPE_LENGTH = 1024;
+
 // Validation functions
 export function validateNode(node: Node, index: number): void {
     if (!node || typeof node !== 'object') {
         throw new Error(`Node at index ${index} is not a valid object`);
     }
-    if (!node.id && node.id !== 0) {
+    if (node.id === undefined || node.id === null || node.id === '') {
         throw new Error(`Node at index ${index} missing required 'id' field`);
     }
+
+    // Security check: ID length
+    const idStr = String(node.id);
+    if (idStr.length > MAX_ID_LENGTH) {
+        throw new Error(`Node at index ${index} ID exceeds maximum length of ${MAX_ID_LENGTH}`);
+    }
+
     if (!node.label || typeof node.label !== 'string') {
         throw new Error(`Node at index ${index} missing or invalid 'label' field`);
+    }
+
+    // Security check: Label length
+    if (node.label.length > MAX_LABEL_LENGTH) {
+        throw new Error(`Node at index ${index} label exceeds maximum length of ${MAX_LABEL_LENGTH}`);
+    }
+
+    // Security check: Type length
+    if (node.type && typeof node.type === 'string' && node.type.length > MAX_TYPE_LENGTH) {
+        throw new Error(`Node at index ${index} type exceeds maximum length of ${MAX_TYPE_LENGTH}`);
     }
 }
 
@@ -17,14 +39,26 @@ export function validateEdge(edge: Edge, index: number): void {
     if (!edge || typeof edge !== 'object') {
         throw new Error(`Edge at index ${index} is not a valid object`);
     }
-    if (!edge.source && edge.source !== 0) {
+    if (edge.source === undefined || edge.source === null || edge.source === '') {
         throw new Error(`Edge at index ${index} missing required 'source' field`);
     }
-    if (!edge.target && edge.target !== 0) {
+    if (edge.target === undefined || edge.target === null || edge.target === '') {
         throw new Error(`Edge at index ${index} missing required 'target' field`);
     }
+
+    // Security check: Source/Target ID length
+    if (String(edge.source).length > MAX_ID_LENGTH || String(edge.target).length > MAX_ID_LENGTH) {
+        throw new Error(`Edge at index ${index} source or target ID exceeds maximum length of ${MAX_ID_LENGTH}`);
+    }
+
     if (!edge.label) {
         throw new Error(`Edge at index ${index} missing required 'label' field`);
+    }
+
+    // Security check: Label length (handling both string and string[])
+    const labelStr = Array.isArray(edge.label) ? edge.label.join(',') : edge.label;
+    if (typeof labelStr === 'string' && labelStr.length > MAX_LABEL_LENGTH) {
+        throw new Error(`Edge at index ${index} label exceeds maximum length of ${MAX_LABEL_LENGTH}`);
     }
 }
 
