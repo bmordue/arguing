@@ -17,3 +17,8 @@
 **Vulnerability:** Lack of input length limits on node and edge fields posed a Denial of Service (DoS) risk through resource exhaustion. Additionally, the XML importer would crash if certain expected tags (like <edges>) were missing, further impacting availability.
 **Learning:** Security is not just about preventing unauthorized access; it's also about ensuring availability. Robustness against malformed inputs is a key part of "failing securely".
 **Prevention:** Enforce strict maximum length limits in the validation layer for all user-provided strings. Use defensive programming patterns like optional chaining and default values when parsing hierarchical data structures like XML.
+
+## 2025-05-19 - [Comprehensive DoS Protection and Type Enforcement]
+**Vulnerability:** Lack of collection size limits (nodes/edges) and file size checks made the application vulnerable to memory exhaustion and Denial of Service (DoS) attacks. Additionally, loose type checking on core fields could lead to unexpected behavior or validation bypasses.
+**Learning:** Security validation must extend beyond string lengths to encompass entire collection sizes and physical file properties (like size on disk) to prevent resource exhaustion before data is processed.
+**Prevention:** Implement resource-aware validation: check file size using `stat` before reading, and enforce maximum counts for all collection types. Strictly validate data types for all user-provided inputs to ensure consistency and prevent exploitation of dynamic type systems.
