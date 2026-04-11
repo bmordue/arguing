@@ -1,13 +1,23 @@
 import sqlite3 from "sqlite3";
 import { Database, open } from "sqlite";
-import { readFile, writeFile } from "fs/promises";
+import { readFile, writeFile, stat } from "fs/promises";
 import { stringify as csvStringify, parse as csvParse } from 'csv/sync';
 import { XMLBuilder, XMLParser } from 'fast-xml-parser';
 import YAML from 'yaml';
 import { Node, Edge, Graph } from "./types";
-import { validateGraph } from "./validation";
+import { validateGraph, MAX_FILE_SIZE } from "./validation";
 
 export { Node, Edge, Graph };
+
+/**
+ * Validates that a file's size does not exceed MAX_FILE_SIZE.
+ */
+async function validateFileSize(filePath: string): Promise<void> {
+    const stats = await stat(filePath);
+    if (stats.size > MAX_FILE_SIZE) {
+        throw new Error(`File ${filePath} size exceeds maximum allowed size of ${MAX_FILE_SIZE} bytes`);
+    }
+}
 
 // --- Database Functions ---
 
@@ -84,6 +94,7 @@ export async function insertGraphIntoDb(db: Database, graph: Graph): Promise<voi
 // --- Import Functions ---
 
 export async function importFromJson(db: Database, inputFile: string): Promise<Graph> {
+    await validateFileSize(inputFile);
     const contents = await readFile(inputFile, "utf-8");
     const graph: Graph = JSON.parse(contents);
     await insertGraphIntoDb(db, graph);
@@ -94,6 +105,9 @@ export async function importFromCsv(db: Database, inputFile: string): Promise<Gr
     const baseInputFile = inputFile.endsWith('.csv') ? inputFile.slice(0, -4) : inputFile;
     const nodeFile = `${baseInputFile}_nodes.csv`;
     const edgeFile = `${baseInputFile}_edges.csv`;
+
+    await validateFileSize(nodeFile);
+    await validateFileSize(edgeFile);
 
     const nodeContents = await readFile(nodeFile, 'utf-8');
     const edgeContents = await readFile(edgeFile, 'utf-8');
@@ -111,6 +125,7 @@ export async function importFromCsv(db: Database, inputFile: string): Promise<Gr
 }
 
 export async function importFromXml(db: Database, inputFile: string): Promise<Graph> {
+    await validateFileSize(inputFile);
     const xmlContent = await readFile(inputFile, 'utf-8');
 
     const parser = new XMLParser({
@@ -151,6 +166,7 @@ export async function importFromXml(db: Database, inputFile: string): Promise<Gr
 }
 
 export async function importFromYaml(db: Database, inputFile: string): Promise<Graph> {
+    await validateFileSize(inputFile);
     const contents = await readFile(inputFile, "utf-8");
     const graph: Graph = YAML.parse(contents);
     await insertGraphIntoDb(db, graph);
