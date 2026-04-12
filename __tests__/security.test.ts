@@ -1,6 +1,5 @@
 import { openDb, initializeDb, importFromXml } from '../lib';
 import fs from 'fs';
-import path from 'path';
 
 describe('Security and Robustness', () => {
     const testDb = 'test_security.sqlite';

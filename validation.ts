@@ -4,6 +4,8 @@ import { Node, Edge, Graph } from './types';
 export const MAX_ID_LENGTH = 1024;
 export const MAX_LABEL_LENGTH = 10000;
 export const MAX_TYPE_LENGTH = 1024;
+export const MAX_NODES_COUNT = 100000;
+export const MAX_EDGES_COUNT = 500000;
 
 // Validation functions
 export function validateNode(node: Node, index: number): void {
@@ -12,6 +14,11 @@ export function validateNode(node: Node, index: number): void {
     }
     if (node.id === undefined || node.id === null || node.id === '') {
         throw new Error(`Node at index ${index} missing required 'id' field`);
+    }
+
+    // Security check: Strict ID type enforcement
+    if (typeof node.id !== 'string' && typeof node.id !== 'number') {
+        throw new Error(`Node at index ${index} ID must be a string or a number`);
     }
 
     // Security check: ID length
@@ -46,6 +53,12 @@ export function validateEdge(edge: Edge, index: number): void {
         throw new Error(`Edge at index ${index} missing required 'target' field`);
     }
 
+    // Security check: Strict source/target type enforcement
+    if ((typeof edge.source !== 'string' && typeof edge.source !== 'number') ||
+        (typeof edge.target !== 'string' && typeof edge.target !== 'number')) {
+        throw new Error(`Edge at index ${index} source and target must be strings or numbers`);
+    }
+
     // Security check: Source/Target ID length
     if (String(edge.source).length > MAX_ID_LENGTH || String(edge.target).length > MAX_ID_LENGTH) {
         throw new Error(`Edge at index ${index} source or target ID exceeds maximum length of ${MAX_ID_LENGTH}`);
@@ -73,6 +86,14 @@ export function validateGraph(graph: Graph): Graph {
     
     if (!Array.isArray(graph.edges)) {
         throw new Error('Graph must contain an "edges" array');
+    }
+
+    // Security check: Collection size limits (DoS protection)
+    if (graph.nodes.length > MAX_NODES_COUNT) {
+        throw new Error(`Graph contains too many nodes (${graph.nodes.length}). Maximum allowed is ${MAX_NODES_COUNT}.`);
+    }
+    if (graph.edges.length > MAX_EDGES_COUNT) {
+        throw new Error(`Graph contains too many edges (${graph.edges.length}). Maximum allowed is ${MAX_EDGES_COUNT}.`);
     }
 
     // Validate each node
