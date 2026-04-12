@@ -17,3 +17,8 @@
 **Vulnerability:** Lack of input length limits on node and edge fields posed a Denial of Service (DoS) risk through resource exhaustion. Additionally, the XML importer would crash if certain expected tags (like <edges>) were missing, further impacting availability.
 **Learning:** Security is not just about preventing unauthorized access; it's also about ensuring availability. Robustness against malformed inputs is a key part of "failing securely".
 **Prevention:** Enforce strict maximum length limits in the validation layer for all user-provided strings. Use defensive programming patterns like optional chaining and default values when parsing hierarchical data structures like XML.
+
+## 2025-05-19 - [Resource Limits for Denial of Service (DoS) Prevention]
+**Vulnerability:** Lack of limits on input file size and graph collection sizes (nodes/edges) created a Denial of Service risk through resource exhaustion (OOM or CPU saturation).
+**Learning:** Even with individual field validation, the aggregate size of input data can overwhelm system resources if not explicitly bounded.
+**Prevention:** Enforce strict maximum limits on both raw input size (via file stat checks) and logical data structure sizes (collection length checks) before processing or storing data.
