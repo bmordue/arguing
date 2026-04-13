@@ -4,6 +4,8 @@ import { Node, Edge, Graph } from './types';
 export const MAX_ID_LENGTH = 1024;
 export const MAX_LABEL_LENGTH = 10000;
 export const MAX_TYPE_LENGTH = 1024;
+export const MAX_NODES_COUNT = 100000;
+export const MAX_EDGES_COUNT = 500000;
 
 // Validation functions
 export function validateNode(node: Node, index: number): void {
@@ -73,6 +75,14 @@ export function validateGraph(graph: Graph): Graph {
     
     if (!Array.isArray(graph.edges)) {
         throw new Error('Graph must contain an "edges" array');
+    }
+
+    // Security check: collection sizes
+    if (graph.nodes.length > MAX_NODES_COUNT) {
+        throw new Error(`Graph nodes count exceeds maximum of ${MAX_NODES_COUNT}`);
+    }
+    if (graph.edges.length > MAX_EDGES_COUNT) {
+        throw new Error(`Graph edges count exceeds maximum of ${MAX_EDGES_COUNT}`);
     }
 
     // Validate each node
