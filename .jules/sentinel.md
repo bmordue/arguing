@@ -22,3 +22,8 @@
 **Vulnerability:** Large input files or graphs with an excessive number of nodes/edges could lead to memory exhaustion and application crashes, even if individual field lengths were within limits.
 **Learning:** Resource exhaustion can occur at multiple levels: individual field size, total collection size, and raw file size.
 **Prevention:** Implement file size validation before reading into memory and enforce maximum counts for nodes and edges in the graph validation layer.
+
+## 2025-05-20 - [Strict Type Enforcement in Validation]
+**Vulnerability:** Input validation based only on field existence and length could be bypassed using type coercion. For example, passing a large object as an ID might result in a short string representation like `"[object Object]"`, bypassing length checks but causing issues in downstream processing.
+**Learning:** Security validation must include strict type enforcement before applying constraints like length or range. Relying on implicit type conversion (like `String()`) can lead to subtle validation bypasses.
+**Prevention:** Always verify that input data matches the expected primitive type (e.g., `string`, `number`) before applying business logic or security constraints. When dealing with arrays, verify the type of each element.
