@@ -14,7 +14,7 @@
   "license": "ISC",
   "dependencies": {
     "csv": "^6.4.1",
-    "fast-xml-parser": "^5.5.7",
+    "fast-xml-parser": "^5.7.0",
     "sqlite": "^5.1.1",
     "sqlite3": "^6.0.1",
     "yaml": "^2.8.3",
