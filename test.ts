@@ -43,21 +43,43 @@ async function runTests() {
 
     runner.test("validateGraph accepts valid graph", async () => {
         const validGraph = {
-            nodes: [
-                { id: "1", label: "Test node", type: "claim" }
-            ],
-            edges: [
-                { source: "1", target: "1", label: "self-reference" }
-            ]
+            nodes: [{ id: "1", label: "Test node", type: "claim" }],
+            edges: [{ source: "1", target: "1", label: "self-reference" }],
         };
-        
+
         const result = validateGraph(validGraph);
         if (!result) throw new Error("Validation should return truthy result");
     });
 
+    runner.test("validateGraph rejects invalid graph - no nodes", async () => {
+        const invalidGraph = { edges: [] };
+
+        try {
+            validateGraph(invalidGraph);
+            throw new Error("Should have thrown error for missing nodes");
+        } catch (error) {
+            if (!(error instanceof Error) || !error.message.includes("nodes")) {
+                throw new Error(`Expected nodes error, got: ${error}`);
+            }
+        }
+    });
+
+    runner.test("validateGraph rejects invalid graph - no edges", async () => {
+        const invalidGraph = { nodes: [] };
+
+        try {
+            validateGraph(invalidGraph);
+            throw new Error("Should have thrown error for missing edges");
+        } catch (error) {
+            if (!(error instanceof Error) || !error.message.includes("edges")) {
+                throw new Error(`Expected edges error, got: ${error}`);
+            }
+        }
+    });
+
     runner.test("database creation and data insertion", async () => {
         const testDbPath = "test.sqlite";
-        
+
         try {
             // Clean up any existing test database
             try {
@@ -92,7 +114,6 @@ async function runTests() {
 
             await db.close();
             await unlink(testDbPath);
-
         } catch (error) {
             // Clean up on error
             try {

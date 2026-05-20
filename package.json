@@ -1,37 +1,58 @@
 {
-  "name": "arguing",
-  "version": "0.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "prestart": "npx tsc",
-    "start": "node built/app.js",
-    "preserve": "npx tsc",
-    "serve": "node built/server.js",
-    "test": "npx tsc && node built/test.js",
-    "build": "npx tsc",
-    "lint": "eslint ."
-  },
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "express": "^5.2.1",
-    "express-rate-limit": "^8.3.0",
-    "graphql": "^16.13.1",
-    "graphql-http": "^1.22.4",
-    "sqlite": "^5.1.1",
-    "sqlite3": "^5.1.7"
-  },
-  "devDependencies": {
-    "@eslint/js": "^9.34.0",
-    "@types/express": "^5.0.6",
-    "@types/node": "^24.3.0",
-    "@typescript-eslint/eslint-plugin": "^8.42.0",
-    "@typescript-eslint/parser": "^8.42.0",
-    "audit-ci": "^7.1.0",
-    "eslint": "^9.34.0",
-    "globals": "^16.3.0",
-    "prettier": "^3.6.2",
-    "typescript": "^5.9.2"
-  }
+    "name": "arguing",
+    "version": "0.0.0",
+    "description": "Argument analysis tool with component library",
+    "main": "built/app.js",
+    "scripts": {
+        "prestart": "npx tsc",
+        "start": "node built/app.js",
+        "test": "npx tsc && node built/test.js",
+        "build": "npx tsc",
+        "lint": "npx eslint .",
+        "format:check": "npx prettier --check .",
+        "generate-components": "npx tsc && node built/src/templates/generate-components.js",
+        "storybook": "storybook dev -p 6006",
+        "build-storybook": "storybook build",
+        "preserve": "npx tsc",
+        "serve": "node built/server.js"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "csv": "^6.5.1",
+        "express": "^5.2.1",
+        "express-rate-limit": "^8.3.0",
+        "fast-xml-parser": "^5.7.2",
+        "graphql": "^16.13.1",
+        "graphql-http": "^1.22.4",
+        "react": "^19.1.1",
+        "react-dom": "^19.1.1",
+        "sqlite": "^5.1.1",
+        "sqlite3": "^5.1.7",
+        "yaml": "^2.9.0"
+    },
+    "overrides": {
+        "tar": ">=7.5.10"
+    },
+    "devDependencies": {
+        "@eslint/js": "^9.34.0",
+        "@storybook/addon-essentials": "^8.6.17",
+        "@storybook/addon-interactions": "^8.6.17",
+        "@storybook/react": "^8.6.17",
+        "@storybook/react-webpack5": "^8.6.17",
+        "@types/express": "^5.0.6",
+        "@types/jest": "^30.0.0",
+        "@types/node": "^24.3.0",
+        "@types/react": "^19.1.13",
+        "@types/react-dom": "^19.1.9",
+        "@typescript-eslint/eslint-plugin": "^8.42.0",
+        "@typescript-eslint/parser": "^8.42.0",
+        "audit-ci": "^7.1.0",
+        "eslint": "^9.34.0",
+        "globals": "^16.3.0",
+        "jest": "^30.3.0",
+        "prettier": "^3.6.2",
+        "typescript": "^5.9.2",
+        "webpack": "^5.105.4"
+    }
 }

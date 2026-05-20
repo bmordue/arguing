@@ -1,22 +1,39 @@
 {
     "nodes": [
-      { "id": 1, "label": "Claim: The minimum voting age should be lowered to 16." },
-      { "id": 2, "label": "Premise: 16-year-olds are old enough to make informed decisions." },
-      { "id": 3, "label": "Conclusion: 16-year-olds should be allowed to vote." },
-      { "id": 4, "label": "Counter-claim: Lowering the voting age would lead to less informed voting." },
-      { "id": 5, "label": "Premise: 16-year-olds lack the life experience and knowledge to make informed decisions." },
-      { "id": 6, "label": "Conclusion: Lowering the voting age would lead to less informed voting." },
-      { "id": 7, "label": "Rebuttal: Lowering the voting age could actually increase political engagement among young people." },
-      { "id": 8, "label": "Premise: Lowering the voting age would send a message that young people are valued and their voices matter." },
-      { "id": 9, "label": "Conclusion: Lowering the voting age could actually increase political engagement among young people." }
+        { "id": 1, "label": "Claim: The minimum voting age should be lowered to 16." },
+        { "id": 2, "label": "Premise: 16-year-olds are old enough to make informed decisions." },
+        { "id": 3, "label": "Conclusion: 16-year-olds should be allowed to vote." },
+        {
+            "id": 4,
+            "label": "Counter-claim: Lowering the voting age would lead to less informed voting."
+        },
+        {
+            "id": 5,
+            "label": "Premise: 16-year-olds lack the life experience and knowledge to make informed decisions."
+        },
+        {
+            "id": 6,
+            "label": "Conclusion: Lowering the voting age would lead to less informed voting."
+        },
+        {
+            "id": 7,
+            "label": "Rebuttal: Lowering the voting age could actually increase political engagement among young people."
+        },
+        {
+            "id": 8,
+            "label": "Premise: Lowering the voting age would send a message that young people are valued and their voices matter."
+        },
+        {
+            "id": 9,
+            "label": "Conclusion: Lowering the voting age could actually increase political engagement among young people."
+        }
     ],
     "edges": [
-      { "source": 1, "target": 2, "label": "Because" },
-      { "source": 2, "target": 3, "label": "Therefore" },
-      { "source": 4, "target": 5, "label": "Because" },
-      { "source": 5, "target": 6, "label": "Therefore" },
-      { "source": 7, "target": 8, "label": "Because" },
-      { "source": 8, "target": 9, "label": "Therefore" }
+        { "source": 1, "target": 2, "label": "Because" },
+        { "source": 2, "target": 3, "label": "Therefore" },
+        { "source": 4, "target": 5, "label": "Because" },
+        { "source": 5, "target": 6, "label": "Therefore" },
+        { "source": 7, "target": 8, "label": "Because" },
+        { "source": 8, "target": 9, "label": "Therefore" }
     ]
-  }
-  
+}
