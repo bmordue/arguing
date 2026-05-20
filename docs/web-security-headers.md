@@ -13,6 +13,7 @@ This document provides an implementation plan for adding **Cross-Origin Resource
 CORS is a W3C/WHATWG mechanism that allows a web server to specify which origins (domains) are permitted to make cross-origin HTTP requests to it. Without CORS headers, browsers block JavaScript running on `https://example.com` from fetching data from `https://api.arguing.io` — even if the API is publicly accessible.
 
 CORS is controlled via HTTP response headers:
+
 - `Access-Control-Allow-Origin` — which origins may access the resource
 - `Access-Control-Allow-Methods` — which HTTP methods are permitted
 - `Access-Control-Allow-Headers` — which request headers are permitted
@@ -48,7 +49,7 @@ The implementation plan below is structured for a future Express.js (or similar)
 **Recommended stack:** `express` (MIT) — widely used, well-documented, extensive middleware ecosystem.
 
 ```typescript
-import express from 'express';
+import express from "express";
 const app = express();
 app.listen(3000);
 ```
@@ -75,37 +76,37 @@ npm install --save-dev @types/cors
 CORS policy should be configurable, not hardcoded. The recommended configuration approach:
 
 ```typescript
-import cors from 'cors';
+import cors from "cors";
 
 // Load allowed origins from environment variable (comma-separated list)
-const allowedOrigins = (process.env.CORS_ALLOWED_ORIGINS ?? '')
-    .split(',')
-    .map(o => o.trim())
+const allowedOrigins = (process.env.CORS_ALLOWED_ORIGINS ?? "")
+    .split(",")
+    .map((o) => o.trim())
     .filter(Boolean);
 
 const corsOptions: cors.CorsOptions = {
     origin: (origin, callback) => {
         // Allow requests with no origin (e.g., curl, server-to-server)
         if (!origin) return callback(null, true);
-        if (allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
+        if (allowedOrigins.includes(origin) || allowedOrigins.includes("*")) {
             return callback(null, true);
         }
         callback(new Error(`Origin ${origin} not allowed by CORS policy`));
     },
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
-    credentials: false,       // Set to true only if cookies/auth headers are required
-    maxAge: 86400,            // Cache preflight for 24 hours
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "Accept"],
+    credentials: false, // Set to true only if cookies/auth headers are required
+    maxAge: 86400, // Cache preflight for 24 hours
 };
 
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));   // Handle preflight for all routes
+app.options("*", cors(corsOptions)); // Handle preflight for all routes
 ```
 
 #### Environment Variables
 
-| Variable | Description | Example |
-|----------|-------------|---------|
+| Variable               | Description                             | Example                                     |
+| ---------------------- | --------------------------------------- | ------------------------------------------- |
 | `CORS_ALLOWED_ORIGINS` | Comma-separated list of allowed origins | `https://myapp.com,https://admin.myapp.com` |
 
 #### Security Considerations
@@ -133,26 +134,28 @@ npm install helmet
 The following policy is appropriate for a server-rendered HTML application with no inline scripts and no third-party dependencies:
 
 ```typescript
-import helmet from 'helmet';
+import helmet from "helmet";
 
-app.use(helmet({
-    contentSecurityPolicy: {
-        directives: {
-            defaultSrc:     ["'self'"],
-            scriptSrc:      ["'self'"],           // No inline scripts; add nonce if needed
-            styleSrc:       ["'self'"],
-            imgSrc:         ["'self'", "data:"],  // Allow data URIs for inline SVG graphs
-            fontSrc:        ["'self'"],
-            connectSrc:     ["'self'"],            // API calls only to same origin
-            frameSrc:       ["'none'"],            // No iframes
-            objectSrc:      ["'none'"],            // No plugins
-            baseUri:        ["'self'"],
-            formAction:     ["'self'"],
-            upgradeInsecureRequests: [],
+app.use(
+    helmet({
+        contentSecurityPolicy: {
+            directives: {
+                defaultSrc: ["'self'"],
+                scriptSrc: ["'self'"], // No inline scripts; add nonce if needed
+                styleSrc: ["'self'"],
+                imgSrc: ["'self'", "data:"], // Allow data URIs for inline SVG graphs
+                fontSrc: ["'self'"],
+                connectSrc: ["'self'"], // API calls only to same origin
+                frameSrc: ["'none'"], // No iframes
+                objectSrc: ["'none'"], // No plugins
+                baseUri: ["'self'"],
+                formAction: ["'self'"],
+                upgradeInsecureRequests: [],
+            },
         },
-    },
-    // Other helmet defaults also set: X-Frame-Options, X-Content-Type-Options, etc.
-}));
+        // Other helmet defaults also set: X-Frame-Options, X-Content-Type-Options, etc.
+    })
+);
 ```
 
 #### CSP Nonce for Inline Scripts (if required)
@@ -160,27 +163,29 @@ app.use(helmet({
 If inline `<script>` blocks are unavoidable (e.g., injected JSON-LD), use a per-request nonce:
 
 ```typescript
-import { randomBytes } from 'crypto';
+import { randomBytes } from "crypto";
 
 app.use((req, res, next) => {
-    res.locals.cspNonce = randomBytes(16).toString('base64');
+    res.locals.cspNonce = randomBytes(16).toString("base64");
     next();
 });
 
-app.use(helmet({
-    contentSecurityPolicy: {
-        directives: {
-            scriptSrc: ["'self'", (req, res) => `'nonce-${(res as any).locals.cspNonce}'`],
+app.use(
+    helmet({
+        contentSecurityPolicy: {
+            directives: {
+                scriptSrc: ["'self'", (req, res) => `'nonce-${(res as any).locals.cspNonce}'`],
+            },
         },
-    },
-}));
+    })
+);
 ```
 
 In the HTML template:
 
 ```html
 <script type="application/ld+json" nonce="<%= cspNonce %>">
-{ ... }
+    { ... }
 </script>
 ```
 
@@ -196,8 +201,8 @@ directives: {
 ```
 
 ```typescript
-app.post('/csp-report', express.json({ type: 'application/csp-report' }), (req, res) => {
-    logger.warn('CSP violation', req.body);
+app.post("/csp-report", express.json({ type: "application/csp-report" }), (req, res) => {
+    logger.warn("CSP violation", req.body);
     res.status(204).end();
 });
 ```
@@ -208,14 +213,14 @@ app.post('/csp-report', express.json({ type: 'application/csp-report' }), (req, 
 
 `helmet` automatically configures several other important headers. The defaults are appropriate for Arguing:
 
-| Header | Default value set by `helmet` | Purpose |
-|--------|-------------------------------|---------|
-| `X-Frame-Options` | `SAMEORIGIN` | Prevents clickjacking |
-| `X-Content-Type-Options` | `nosniff` | Prevents MIME sniffing |
-| `Referrer-Policy` | `no-referrer` | Limits referrer leakage |
-| `Strict-Transport-Security` | `max-age=15552000; includeSubDomains` | Enforces HTTPS |
-| `X-DNS-Prefetch-Control` | `off` | Reduces DNS leakage |
-| `Permissions-Policy` | (feature restrictions) | Restricts browser features |
+| Header                      | Default value set by `helmet`         | Purpose                    |
+| --------------------------- | ------------------------------------- | -------------------------- |
+| `X-Frame-Options`           | `SAMEORIGIN`                          | Prevents clickjacking      |
+| `X-Content-Type-Options`    | `nosniff`                             | Prevents MIME sniffing     |
+| `Referrer-Policy`           | `no-referrer`                         | Limits referrer leakage    |
+| `Strict-Transport-Security` | `max-age=15552000; includeSubDomains` | Enforces HTTPS             |
+| `X-DNS-Prefetch-Control`    | `off`                                 | Reduces DNS leakage        |
+| `Permissions-Policy`        | (feature restrictions)                | Restricts browser features |
 
 No additional configuration is needed for these — `helmet` defaults are correct for the Arguing use case.
 
@@ -241,23 +246,23 @@ No additional configuration is needed for these — `helmet` defaults are correc
 
 All CORS and CSP configuration should be driven by **environment variables** to support different policies in development, staging, and production:
 
-| Variable | Purpose | Development default | Production recommendation |
-|----------|---------|---------------------|--------------------------|
-| `CORS_ALLOWED_ORIGINS` | Allowlisted origins | `http://localhost:3000` | Explicit list of production domains |
-| `CSP_REPORT_URI` | CSP violation reporting URL | _(empty)_ | Internal reporting endpoint |
-| `NODE_ENV` | Enables/disables strict mode | `development` | `production` |
+| Variable               | Purpose                      | Development default     | Production recommendation           |
+| ---------------------- | ---------------------------- | ----------------------- | ----------------------------------- |
+| `CORS_ALLOWED_ORIGINS` | Allowlisted origins          | `http://localhost:3000` | Explicit list of production domains |
+| `CSP_REPORT_URI`       | CSP violation reporting URL  | _(empty)_               | Internal reporting endpoint         |
+| `NODE_ENV`             | Enables/disables strict mode | `development`           | `production`                        |
 
 ---
 
 ## Recommendation
 
-| Phase | Action | Priority | Dependency |
-|-------|--------|----------|------------|
-| 1 | Add HTTP server (Express) | High (for web layer) | None |
-| 2 | CORS via `cors` middleware | High | Phase 1 |
-| 3 | CSP via `helmet` middleware | High | Phase 1 |
-| 4 | Additional `helmet` defaults | High (automatic) | Phase 3 |
-| 5 | CORS and CSP tests | High | Phases 2–3 |
+| Phase | Action                       | Priority             | Dependency |
+| ----- | ---------------------------- | -------------------- | ---------- |
+| 1     | Add HTTP server (Express)    | High (for web layer) | None       |
+| 2     | CORS via `cors` middleware   | High                 | Phase 1    |
+| 3     | CSP via `helmet` middleware  | High                 | Phase 1    |
+| 4     | Additional `helmet` defaults | High (automatic)     | Phase 3    |
+| 5     | CORS and CSP tests           | High                 | Phases 2–3 |
 
 CORS and CSP are **not optional** for any web-facing deployment. They must be implemented from the first commit that adds an HTTP server, not retrofitted later.
 
