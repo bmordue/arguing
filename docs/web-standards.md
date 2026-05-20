@@ -13,6 +13,7 @@ This document provides an implementation plan for integrating **Microformats** a
 [Microformats](https://microformats.org/) are a set of HTML class-name conventions that embed structured data directly in human-readable HTML. They allow parsers (search engines, social readers, feed aggregators) to extract meaningful data without a separate API.
 
 Key Microformats vocabulary:
+
 - `h-card` — represents a person or organisation (analogous to vCard)
 - `h-entry` — represents a blog post, article, or discrete piece of content
 - `h-cite` — represents a citation or reference
@@ -23,6 +24,7 @@ Key Microformats vocabulary:
 The [Open Graph Protocol](https://ogp.me/) uses `<meta>` tags in an HTML page's `<head>` to describe the page as a rich object. When the page URL is shared on social media (Facebook, Twitter/X, LinkedIn, Slack, Discord), the platform reads these tags to display a rich preview card showing the page title, description, and image.
 
 Key Open Graph properties:
+
 - `og:title` — title of the content
 - `og:description` — short description
 - `og:type` — type of object (e.g., `article`, `website`)
@@ -53,9 +55,9 @@ The plan below assumes a future **HTML rendering layer** and describes what to i
 
 1. Add `--format html` CLI option.
 2. Create `src/exporters/html.ts`:
-   - Render each node as an HTML `<article>` or `<section>` element.
-   - Render edges as links or visual connectors between nodes.
-   - Use a simple template string or a lightweight templating library (e.g., `mustache`, MIT).
+    - Render each node as an HTML `<article>` or `<section>` element.
+    - Render edges as links or visual connectors between nodes.
+    - Use a simple template string or a lightweight templating library (e.g., `mustache`, MIT).
 3. Output to `<output-basename>/index.html` and one file per top-level claim.
 
 ---
@@ -66,28 +68,28 @@ The plan below assumes a future **HTML rendering layer** and describes what to i
 
 #### Mapping: Argument Graph → Open Graph
 
-| Arguing concept | Open Graph property | Example value |
-|-----------------|--------------------|-|
-| Top-level claim label | `og:title` | "16-year-olds should be allowed to vote" |
-| Summary of premises | `og:description` | "Supported by 3 premises and 2 rebuttals" |
-| Graph page URL | `og:url` | `https://example.com/debates/voting-age` |
-| Node type | `og:type` | `article` |
-| Optional image | `og:image` | Graph visualisation PNG |
+| Arguing concept       | Open Graph property | Example value                             |
+| --------------------- | ------------------- | ----------------------------------------- |
+| Top-level claim label | `og:title`          | "16-year-olds should be allowed to vote"  |
+| Summary of premises   | `og:description`    | "Supported by 3 premises and 2 rebuttals" |
+| Graph page URL        | `og:url`            | `https://example.com/debates/voting-age`  |
+| Node type             | `og:type`           | `article`                                 |
+| Optional image        | `og:image`          | Graph visualisation PNG                   |
 
 #### Example HTML `<head>`
 
 ```html
 <head>
-  <meta charset="UTF-8">
-  <title>16-year-olds should be allowed to vote</title>
+    <meta charset="UTF-8" />
+    <title>16-year-olds should be allowed to vote</title>
 
-  <!-- Open Graph -->
-  <meta property="og:title"       content="16-year-olds should be allowed to vote" />
-  <meta property="og:description" content="Supported by 3 premises and 2 rebuttals." />
-  <meta property="og:type"        content="article" />
-  <meta property="og:url"         content="https://example.com/debates/voting-age" />
-  <meta property="og:image"       content="https://example.com/debates/voting-age/graph.png" />
-  <meta property="og:site_name"   content="Arguing" />
+    <!-- Open Graph -->
+    <meta property="og:title" content="16-year-olds should be allowed to vote" />
+    <meta property="og:description" content="Supported by 3 premises and 2 rebuttals." />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://example.com/debates/voting-age" />
+    <meta property="og:image" content="https://example.com/debates/voting-age/graph.png" />
+    <meta property="og:site_name" content="Arguing" />
 </head>
 ```
 
@@ -107,27 +109,27 @@ The plan below assumes a future **HTML rendering layer** and describes what to i
 
 #### Mapping: Argument Graph → Microformats
 
-| Arguing concept | Microformat | HTML pattern |
-|-----------------|------------|---|
-| Top-level claim | `h-entry` | `<article class="h-entry">` |
-| Claim label | `p-name` | `<h1 class="p-name">...</h1>` |
-| Claim body | `e-content` | `<div class="e-content">...</div>` |
-| Author / person node | `h-card` | `<address class="h-card">` |
-| Author name | `p-name` (inside `h-card`) | `<span class="p-name">...</span>` |
-| Supporting premise | `h-cite` | `<blockquote class="h-cite">` |
-| Publication date | `dt-published` | `<time class="dt-published" datetime="...">` |
+| Arguing concept      | Microformat                | HTML pattern                                 |
+| -------------------- | -------------------------- | -------------------------------------------- |
+| Top-level claim      | `h-entry`                  | `<article class="h-entry">`                  |
+| Claim label          | `p-name`                   | `<h1 class="p-name">...</h1>`                |
+| Claim body           | `e-content`                | `<div class="e-content">...</div>`           |
+| Author / person node | `h-card`                   | `<address class="h-card">`                   |
+| Author name          | `p-name` (inside `h-card`) | `<span class="p-name">...</span>`            |
+| Supporting premise   | `h-cite`                   | `<blockquote class="h-cite">`                |
+| Publication date     | `dt-published`             | `<time class="dt-published" datetime="...">` |
 
 #### Example HTML Structure
 
 ```html
 <article class="h-entry">
-  <h1 class="p-name">16-year-olds should be allowed to vote</h1>
-  <div class="e-content">
-    <p>This argument is supported by the following premises:</p>
-    <blockquote class="h-cite">
-      <p class="p-name">16-year-olds can make informed decisions</p>
-    </blockquote>
-  </div>
+    <h1 class="p-name">16-year-olds should be allowed to vote</h1>
+    <div class="e-content">
+        <p>This argument is supported by the following premises:</p>
+        <blockquote class="h-cite">
+            <p class="p-name">16-year-olds can make informed decisions</p>
+        </blockquote>
+    </div>
 </article>
 ```
 
@@ -151,13 +153,13 @@ This complements Open Graph and Microformats by providing a richer semantic desc
 
 ```html
 <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Claim",
-  "name": "16-year-olds should be allowed to vote",
-  "description": "Supported by 3 premises and 2 rebuttals.",
-  "url": "https://example.com/debates/voting-age"
-}
+    {
+        "@context": "https://schema.org",
+        "@type": "Claim",
+        "name": "16-year-olds should be allowed to vote",
+        "description": "Supported by 3 premises and 2 rebuttals.",
+        "url": "https://example.com/debates/voting-age"
+    }
 </script>
 ```
 
@@ -170,12 +172,12 @@ This complements Open Graph and Microformats by providing a richer semantic desc
 
 ## Recommendation
 
-| Phase | Action | Priority | Dependency |
-|-------|--------|----------|------------|
-| 1 | HTML rendering of argument graphs | Medium | None |
-| 2 | Open Graph meta tags | Medium | Phase 1 |
-| 3 | Microformats class names | Medium | Phase 1 |
-| 4 | JSON-LD in HTML | Medium | Phase 1 + Data Formats Plan |
+| Phase | Action                            | Priority | Dependency                  |
+| ----- | --------------------------------- | -------- | --------------------------- |
+| 1     | HTML rendering of argument graphs | Medium   | None                        |
+| 2     | Open Graph meta tags              | Medium   | Phase 1                     |
+| 3     | Microformats class names          | Medium   | Phase 1                     |
+| 4     | JSON-LD in HTML                   | Medium   | Phase 1 + Data Formats Plan |
 
 These standards are practical and relatively low-effort to add once an HTML rendering layer exists. They significantly improve the discoverability and shareability of published argument graphs.
 

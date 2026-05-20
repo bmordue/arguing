@@ -24,13 +24,13 @@ The Arguing project models **logical argument structures** — claims, premises,
 
 However, several real-world use cases introduce a temporal dimension:
 
-| Use Case | iCal Relevance |
-|----------|---------------|
-| Structured debates with scheduled sessions | `VEVENT` for each debate round |
-| Argument submission deadlines | `VTODO` with a due date |
-| Tagging nodes with the date an argument was made | `DTSTART` on a custom property |
-| Exporting a debate schedule to participants' calendars | `.ics` file export |
-| Synchronising debate schedules with calendar apps | CalDAV write endpoint |
+| Use Case                                               | iCal Relevance                 |
+| ------------------------------------------------------ | ------------------------------ |
+| Structured debates with scheduled sessions             | `VEVENT` for each debate round |
+| Argument submission deadlines                          | `VTODO` with a due date        |
+| Tagging nodes with the date an argument was made       | `DTSTART` on a custom property |
+| Exporting a debate schedule to participants' calendars | `.ics` file export             |
+| Synchronising debate schedules with calendar apps      | CalDAV write endpoint          |
 
 ---
 
@@ -48,8 +48,8 @@ interface Node {
     label: string;
     type?: string;
     // Optional temporal metadata
-    createdAt?: string;   // ISO 8601 date-time
-    occurredAt?: string;  // ISO 8601 date-time — when the argument was made
+    createdAt?: string; // ISO 8601 date-time
+    occurredAt?: string; // ISO 8601 date-time — when the argument was made
 }
 
 interface Edge {
@@ -71,13 +71,13 @@ This is backward-compatible: fields are optional and existing JSON files require
 
 #### Mapping: Argument Graph → iCalendar
 
-| Arguing concept | iCal component | iCal property |
-|-----------------|---------------|---------------|
-| Top-level claim | `VEVENT` | `SUMMARY` = claim label |
-| Node `occurredAt` | `VEVENT` | `DTSTART` |
-| Edge `createdAt` | `VEVENT` | `DTSTART` |
-| Node ID | `VEVENT` | `UID` = `<id>@arguing` |
-| Node `label` | `VEVENT` | `DESCRIPTION` |
+| Arguing concept   | iCal component | iCal property           |
+| ----------------- | -------------- | ----------------------- |
+| Top-level claim   | `VEVENT`       | `SUMMARY` = claim label |
+| Node `occurredAt` | `VEVENT`       | `DTSTART`               |
+| Edge `createdAt`  | `VEVENT`       | `DTSTART`               |
+| Node ID           | `VEVENT`       | `UID` = `<id>@arguing`  |
+| Node `label`      | `VEVENT`       | `DESCRIPTION`           |
 
 #### Example `.ics` Output
 
@@ -101,14 +101,15 @@ END:VCALENDAR
 
 1. Add `--format ical` CLI option.
 2. Create `src/exporters/ical.ts`:
-   - Filter nodes that have `occurredAt` or that are of type `claim`.
-   - For each, construct a `VEVENT` block.
-   - Wrap all events in a `VCALENDAR` envelope.
-   - Output to `<output-basename>.ics`.
+    - Filter nodes that have `occurredAt` or that are of type `claim`.
+    - For each, construct a `VEVENT` block.
+    - Wrap all events in a `VCALENDAR` envelope.
+    - Output to `<output-basename>.ics`.
 3. Use the `ical-generator` package (MIT) for correct iCal serialisation, or implement a minimal template-based serialiser for the subset of properties needed.
 4. Add tests verifying the output parses as valid iCal.
 
 #### Dependency Evaluation
+
 - `ical-generator` (MIT, actively maintained) — handles edge cases in iCal formatting (line folding, escaping).
 - Alternative: minimal string template (avoids dependency; acceptable given limited property set).
 
@@ -133,11 +134,11 @@ END:VCALENDAR
 
 ## Recommendation
 
-| Phase | Action | Priority |
-|-------|--------|----------|
-| 1 | Add optional `createdAt` / `occurredAt` fields to the Node and Edge types | Low |
-| 2 | Add iCal export for nodes with temporal metadata | Low |
-| 3 | CalDAV server integration | Deferred |
+| Phase | Action                                                                    | Priority |
+| ----- | ------------------------------------------------------------------------- | -------- |
+| 1     | Add optional `createdAt` / `occurredAt` fields to the Node and Edge types | Low      |
+| 2     | Add iCal export for nodes with temporal metadata                          | Low      |
+| 3     | CalDAV server integration                                                 | Deferred |
 
 Calendar integration is **low priority** for the current CLI tool but is straightforward to add incrementally once temporal metadata exists in the data model.
 

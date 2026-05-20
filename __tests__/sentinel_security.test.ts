@@ -1,10 +1,10 @@
-import { validateGraph, MAX_LABEL_LENGTH, MAX_NODES_COUNT } from '../validation';
-import { openDb, importFromXml, importFromJson, MAX_FILE_SIZE } from '../lib';
-import fs from 'fs';
-import { rm } from 'fs/promises';
+import { validateGraph, MAX_LABEL_LENGTH, MAX_NODES_COUNT } from "../validation";
+import { openDb, importFromXml, importFromJson, MAX_FILE_SIZE } from "../lib";
+import fs from "fs";
+import { rm } from "fs/promises";
 
-describe('Sentinel Security and Robustness', () => {
-    const testDb = 'test_sentinel.sqlite';
+describe("Sentinel Security and Robustness", () => {
+    const testDb = "test_sentinel.sqlite";
 
     afterEach(async () => {
         try {
@@ -14,19 +14,19 @@ describe('Sentinel Security and Robustness', () => {
         }
     });
 
-    test('Node label exceeding MAX_LABEL_LENGTH should be rejected', () => {
-        const longLabel = 'a'.repeat(MAX_LABEL_LENGTH + 1);
+    test("Node label exceeding MAX_LABEL_LENGTH should be rejected", () => {
+        const longLabel = "a".repeat(MAX_LABEL_LENGTH + 1);
         const invalidGraph = {
-            nodes: [
-                { id: "1", label: longLabel, type: "claim" }
-            ],
-            edges: []
+            nodes: [{ id: "1", label: longLabel, type: "claim" }],
+            edges: [],
         };
 
-        expect(() => validateGraph(invalidGraph)).toThrow(`Node at index 0 label exceeds maximum length of ${MAX_LABEL_LENGTH}`);
+        expect(() => validateGraph(invalidGraph)).toThrow(
+            `Node at index 0 label exceeds maximum length of ${MAX_LABEL_LENGTH}`
+        );
     });
 
-    test('XML with missing nodes or edges should be handled gracefully', async () => {
+    test("XML with missing nodes or edges should be handled gracefully", async () => {
         const xmlContent = `
 <graph>
   <nodes>
@@ -36,7 +36,7 @@ describe('Sentinel Security and Robustness', () => {
   </nodes>
 </graph>
 `;
-        const xmlFile = 'no_edges.xml';
+        const xmlFile = "no_edges.xml";
         fs.writeFileSync(xmlFile, xmlContent);
 
         try {
@@ -53,9 +53,9 @@ describe('Sentinel Security and Robustness', () => {
         }
     });
 
-    test('Empty XML graph should be handled gracefully', async () => {
+    test("Empty XML graph should be handled gracefully", async () => {
         const xmlContent = `<graph></graph>`;
-        const xmlFile = 'empty.xml';
+        const xmlFile = "empty.xml";
         fs.writeFileSync(xmlFile, xmlContent);
 
         try {
@@ -72,27 +72,29 @@ describe('Sentinel Security and Robustness', () => {
         }
     });
 
-    test('Graph exceeding MAX_NODES_COUNT should be rejected', () => {
+    test("Graph exceeding MAX_NODES_COUNT should be rejected", () => {
         const tooManyNodes = Array.from({ length: MAX_NODES_COUNT + 1 }, (_, i) => ({
             id: String(i),
             label: `Node ${i}`,
-            type: "node"
+            type: "node",
         }));
 
         const invalidGraph = {
             nodes: tooManyNodes,
-            edges: []
+            edges: [],
         };
 
-        expect(() => validateGraph(invalidGraph)).toThrow(`Graph nodes count exceeds maximum of ${MAX_NODES_COUNT}`);
+        expect(() => validateGraph(invalidGraph)).toThrow(
+            `Graph nodes count exceeds maximum of ${MAX_NODES_COUNT}`
+        );
     });
 
-    test('File exceeding MAX_FILE_SIZE should be rejected', async () => {
-        const largeFile = 'large_test.json';
+    test("File exceeding MAX_FILE_SIZE should be rejected", async () => {
+        const largeFile = "large_test.json";
         const db = await openDb(testDb);
 
         // Create a file slightly larger than MAX_FILE_SIZE
-        const handle = fs.openSync(largeFile, 'w');
+        const handle = fs.openSync(largeFile, "w");
         fs.ftruncateSync(handle, MAX_FILE_SIZE + 1);
         fs.closeSync(handle);
 

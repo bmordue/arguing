@@ -14,14 +14,14 @@ Before designing bespoke exchange mechanisms, it is essential to understand how 
 
 ### Patterns Identified
 
-| Pattern | Description | Examples |
-|---------|-------------|---------|
-| **Full snapshot export** | Export the entire dataset in one operation | Kialo CSV export, Argdown JSON dump |
-| **Selective / filtered export** | Export a subset based on node type, date range, or tag | Debater XML filtered export |
-| **Streaming / chunked export** | Stream large datasets to avoid memory exhaustion | Neo4j bulk export, RDF streaming |
-| **Standard interchange formats** | Adopt widely used formats to maximise compatibility | GraphML, JSON-LD, OPML, CSV |
-| **Webhook / event push** | Notify external systems on each data change | Roam Research plugin API |
-| **Pull-based sync** | External systems poll a versioned endpoint for changes | Argument Interchange Format (AIF) REST feeds |
+| Pattern                          | Description                                            | Examples                                     |
+| -------------------------------- | ------------------------------------------------------ | -------------------------------------------- |
+| **Full snapshot export**         | Export the entire dataset in one operation             | Kialo CSV export, Argdown JSON dump          |
+| **Selective / filtered export**  | Export a subset based on node type, date range, or tag | Debater XML filtered export                  |
+| **Streaming / chunked export**   | Stream large datasets to avoid memory exhaustion       | Neo4j bulk export, RDF streaming             |
+| **Standard interchange formats** | Adopt widely used formats to maximise compatibility    | GraphML, JSON-LD, OPML, CSV                  |
+| **Webhook / event push**         | Notify external systems on each data change            | Roam Research plugin API                     |
+| **Pull-based sync**              | External systems poll a versioned endpoint for changes | Argument Interchange Format (AIF) REST feeds |
 
 ### Relevant Standards
 
@@ -111,13 +111,13 @@ arguing export --format sql --output dump.sql
 
 ### Supported Source Platforms (Phase 1)
 
-| Platform | Export Format Available | Import Strategy |
-|----------|------------------------|-----------------|
-| **Kialo** | CSV (topics + pros/cons) | Custom CSV parser → Arguing JSON |
-| **Argdown** | `.argdown` / JSON | Argdown JSON → Arguing JSON |
-| **Debategraph** | XML | XSLT transformation → Arguing JSON |
-| **MindMeister / FreeMind** | OPML / FreeMind XML | OPML parser → Arguing JSON |
-| **Roam Research** | JSON | Roam JSON → Arguing JSON |
+| Platform                   | Export Format Available  | Import Strategy                    |
+| -------------------------- | ------------------------ | ---------------------------------- |
+| **Kialo**                  | CSV (topics + pros/cons) | Custom CSV parser → Arguing JSON   |
+| **Argdown**                | `.argdown` / JSON        | Argdown JSON → Arguing JSON        |
+| **Debategraph**            | XML                      | XSLT transformation → Arguing JSON |
+| **MindMeister / FreeMind** | OPML / FreeMind XML      | OPML parser → Arguing JSON         |
+| **Roam Research**          | JSON                     | Roam JSON → Arguing JSON           |
 
 ### Migration Architecture
 
@@ -193,6 +193,7 @@ arguing sync --consumer ci-pipeline --format json --output delta.json
 ```
 
 The sync command:
+
 1. Reads `last_sync` for the named consumer.
 2. Queries nodes and edges where `updated_at > last_sync`.
 3. Writes the delta in the requested format.
@@ -225,12 +226,12 @@ Consumers that receive a delta must support upsert (insert-or-replace) semantics
 
 The existing `validation.ts` module provides a foundation. The pipeline extends it with:
 
-| Layer | Responsibility |
-|-------|---------------|
-| **Schema validation** | JSON structure, required fields, correct data types |
-| **Referential integrity** | Edge source/target IDs must reference existing nodes |
+| Layer                        | Responsibility                                            |
+| ---------------------------- | --------------------------------------------------------- |
+| **Schema validation**        | JSON structure, required fields, correct data types       |
+| **Referential integrity**    | Edge source/target IDs must reference existing nodes      |
 | **Business rule validation** | Configurable rules (e.g., no self-loops, max edge weight) |
-| **Duplicate detection** | Identify and optionally merge duplicate nodes |
+| **Duplicate detection**      | Identify and optionally merge duplicate nodes             |
 
 ### Transformation Pipeline
 
@@ -240,10 +241,10 @@ Transformations are composable functions that operate on the internal graph repr
 type Transform = (graph: Graph) => Graph;
 
 const pipeline: Transform[] = [
-  normaliseIds,        // Convert numeric IDs to strings
-  deduplicateNodes,    // Merge nodes with identical labels
-  inferEdgeTypes,      // Add default edge types where missing
-  sanitiseLabels,      // Strip control characters from text fields
+    normaliseIds, // Convert numeric IDs to strings
+    deduplicateNodes, // Merge nodes with identical labels
+    inferEdgeTypes, // Add default edge types where missing
+    sanitiseLabels, // Strip control characters from text fields
 ];
 ```
 
@@ -259,16 +260,16 @@ A `pipeline.config.json` file in the project root (or specified via `--pipeline-
 
 ```json
 {
-  "transforms": {
-    "normaliseIds": true,
-    "deduplicateNodes": false,
-    "inferEdgeTypes": true,
-    "sanitiseLabels": true
-  },
-  "rules": {
-    "allowSelfLoops": false,
-    "maxLabelLength": 500
-  }
+    "transforms": {
+        "normaliseIds": true,
+        "deduplicateNodes": false,
+        "inferEdgeTypes": true,
+        "sanitiseLabels": true
+    },
+    "rules": {
+        "allowSelfLoops": false,
+        "maxLabelLength": 500
+    }
 }
 ```
 
@@ -316,6 +317,7 @@ arguing restore --input backups/arguing_2024-11-15T142300Z.sqlite --confirm
 ```
 
 The restore command:
+
 1. Validates the backup file is a readable SQLite database.
 2. Prompts for confirmation unless `--yes` is supplied.
 3. Renames the current database to `.bak` before restoring.
@@ -327,11 +329,11 @@ A `backup.schedule` key in configuration enables cron-style scheduling:
 
 ```json
 {
-  "backup": {
-    "schedule": "0 2 * * *",
-    "outputDir": "./backups",
-    "retainCount": 7
-  }
+    "backup": {
+        "schedule": "0 2 * * *",
+        "outputDir": "./backups",
+        "retainCount": 7
+    }
 }
 ```
 
@@ -343,16 +345,16 @@ Each backup directory contains a `manifest.json`:
 
 ```json
 {
-  "backups": [
-    {
-      "filename": "arguing_2024-11-15T142300Z.sqlite",
-      "createdAt": "2024-11-15T14:23:00Z",
-      "sizeBytes": 204800,
-      "nodeCount": 42,
-      "edgeCount": 67,
-      "checksum": "sha256:abc123..."
-    }
-  ]
+    "backups": [
+        {
+            "filename": "arguing_2024-11-15T142300Z.sqlite",
+            "createdAt": "2024-11-15T14:23:00Z",
+            "sizeBytes": 204800,
+            "nodeCount": 42,
+            "edgeCount": 67,
+            "checksum": "sha256:abc123..."
+        }
+    ]
 }
 ```
 
@@ -396,14 +398,14 @@ CREATE TABLE provenance (
 
 ### Lineage Capture Points
 
-| Action | Provenance Record |
-|--------|------------------|
-| Import from file | `action='imported'`, `source=<filename>`, `source_format=<format>` |
+| Action                          | Provenance Record                                                           |
+| ------------------------------- | --------------------------------------------------------------------------- |
+| Import from file                | `action='imported'`, `source=<filename>`, `source_format=<format>`          |
 | Migration from another platform | `action='migrated'`, `source=<platform>`, `source_format=<platform_format>` |
-| Manual creation | `action='created'`, `performed_by=<user>` |
-| Sync delta applied | `action='updated'`, `source=<consumer>` |
-| Restore from backup | `action='restored'`, `source=<backup_filename>` |
-| Deletion | `action='deleted'`, `details=<snapshot of deleted data>` |
+| Manual creation                 | `action='created'`, `performed_by=<user>`                                   |
+| Sync delta applied              | `action='updated'`, `source=<consumer>`                                     |
+| Restore from backup             | `action='restored'`, `source=<backup_filename>`                             |
+| Deletion                        | `action='deleted'`, `details=<snapshot of deleted data>`                    |
 
 ### Lineage Query API
 
@@ -436,13 +438,13 @@ When a node or edge is deleted, its last-known state is captured in the `details
 
 ## Implementation Phases
 
-| Phase | Deliverables | Estimated Effort |
-|-------|-------------|-----------------|
-| **Phase 1** | Bulk export (JSON, CSV, GraphML, AIF) + Kialo/Argdown migration | 3–4 weeks |
-| **Phase 2** | Data validation pipeline + backup/restore | 2–3 weeks |
-| **Phase 3** | Incremental sync + additional migrators | 2–3 weeks |
-| **Phase 4** | Data lineage and provenance tracking | 2 weeks |
-| **Phase 5** | Scheduled backups + lineage query API + docs | 1–2 weeks |
+| Phase       | Deliverables                                                    | Estimated Effort |
+| ----------- | --------------------------------------------------------------- | ---------------- |
+| **Phase 1** | Bulk export (JSON, CSV, GraphML, AIF) + Kialo/Argdown migration | 3–4 weeks        |
+| **Phase 2** | Data validation pipeline + backup/restore                       | 2–3 weeks        |
+| **Phase 3** | Incremental sync + additional migrators                         | 2–3 weeks        |
+| **Phase 4** | Data lineage and provenance tracking                            | 2 weeks          |
+| **Phase 5** | Scheduled backups + lineage query API + docs                    | 1–2 weeks        |
 
 ---
 
@@ -451,6 +453,7 @@ When a node or edge is deleted, its last-known state is captured in the `details
 ### Testing
 
 All new modules must include:
+
 - Unit tests for individual functions (using the existing test framework in `test.ts`).
 - Integration tests using the existing `example_graph.json` fixture.
 - New fixtures for migration source formats in `test/fixtures/`.

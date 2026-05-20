@@ -47,13 +47,16 @@ This tool provides `import` and `export` commands to manage argument data in the
 ### Importing Data
 
 To import data from a file, use the `import` command:
+
 ```bash
 node built/app.js import <format> <file>
 ```
--   `<format>` can be `json`, `csv`, `xml`, or `yaml`.
--   `<file>` is the path to the input file.
+
+- `<format>` can be `json`, `csv`, `xml`, or `yaml`.
+- `<file>` is the path to the input file.
 
 **Example:**
+
 ```bash
 node built/app.js import json example_graph.json
 ```
@@ -63,13 +66,16 @@ For CSV import, the tool expects two files: `<file>_nodes.csv` and `<file>_edges
 ### Exporting Data
 
 To export data from the database, use the `export` command:
+
 ```bash
 node built/app.js export <format> <file>
 ```
--   `<format>` can be `json`, `csv`, `xml`, or `yaml`.
--   `<file>` is the path to the output file.
+
+- `<format>` can be `json`, `csv`, `xml`, or `yaml`.
+- `<file>` is the path to the output file.
 
 **Example:**
+
 ```bash
 node built/app.js export json export_data.json
 ```

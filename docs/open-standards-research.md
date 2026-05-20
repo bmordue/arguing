@@ -7,6 +7,7 @@ This document evaluates open standards and protocols relevant to the **Arguing**
 ## Project Context
 
 The Arguing tool currently:
+
 - Ingests argument graphs as JSON files
 - Stores nodes (claims, premises, conclusions, rebuttals) and edges (logical relationships) in SQLite
 - Is operated via a CLI
@@ -104,18 +105,18 @@ Cross-Origin Resource Sharing (CORS) and Content Security Policy (CSP) are HTTP 
 
 ## Priority Summary
 
-| Standard / Protocol    | Priority | Dependency                     |
-|------------------------|----------|--------------------------------|
-| Common formats (CSV, JSON, XML, YAML) | High | None — applicable now |
-| JSON-LD / Schema.org   | High     | None — extends existing JSON   |
-| CORS / CSP headers     | High     | Requires HTTP server layer     |
-| vCard export           | Medium   | Person/org nodes in graph      |
-| Open Graph             | Medium   | Requires HTML rendering layer  |
-| Microformats           | Medium   | Requires HTML rendering layer  |
-| RSS / Atom feeds       | Medium   | Requires HTTP server layer     |
-| iCal / CalDAV          | Low      | Limited relevance to data model|
-| ActivityPub            | Low      | Significant architecture change|
-| WebSub                 | Low      | Requires HTTP server and hub   |
+| Standard / Protocol                   | Priority | Dependency                      |
+| ------------------------------------- | -------- | ------------------------------- |
+| Common formats (CSV, JSON, XML, YAML) | High     | None — applicable now           |
+| JSON-LD / Schema.org                  | High     | None — extends existing JSON    |
+| CORS / CSP headers                    | High     | Requires HTTP server layer      |
+| vCard export                          | Medium   | Person/org nodes in graph       |
+| Open Graph                            | Medium   | Requires HTML rendering layer   |
+| Microformats                          | Medium   | Requires HTML rendering layer   |
+| RSS / Atom feeds                      | Medium   | Requires HTTP server layer      |
+| iCal / CalDAV                         | Low      | Limited relevance to data model |
+| ActivityPub                           | Low      | Significant architecture change |
+| WebSub                                | Low      | Requires HTTP server and hub    |
 
 ---
 
